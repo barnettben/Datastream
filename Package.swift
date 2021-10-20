@@ -27,6 +27,8 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "DatastreamTests",
-            dependencies: ["Datastream"]),
+            dependencies: ["Datastream"],
+            resources: [.process("Resources")]
+        ),
     ]
 )
