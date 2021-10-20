@@ -18,9 +18,13 @@ private let CHECKSUM_LENGTH: Int = 5
 /// Content between these two varies between record types.
 ///
 /// See ``BaseRecord`` for a minimal `Record` implementation
+///
+/// - Note: Records are not necessarily required to have a valid checksum
 public protocol Record {
     var descriptor: RecordDescriptor { get }
     var checksum: Int { get }
+    
+    var checksumIsValid: Bool { get }
 }
 
 
@@ -56,19 +60,21 @@ enum RecordError: Error {
 ///
 /// Implements `Record`. It also provides:
 /// - A variable containing the body content of the record
-/// - An initializer to build a `BaseRecord` from a string, validating the
-///  record length and checksum which doing so.
+/// - An initializer to build a `BaseRecord` from a string
 public struct BaseRecord: Record {
     private(set) public var descriptor: RecordDescriptor
     private(set) public var content: String
     private(set) public var checksum: Int
     
+    public var checksumIsValid: Bool {
+        let checksumString = String(format: "%05d", checksum)
+        let stringValue = "\(descriptor.rawValue),\(content),\(checksumString)"
+        return BaseRecord.validateRecordStringChecksum(stringValue)
+    }
+    
     init(string value: String) throws {
         guard BaseRecord.validateRecordLength(value) else {
             throw RecordError.invalidLength
-        }
-        guard BaseRecord.validateRecordStringChecksum(value) else {
-            throw RecordError.invalidChecksum
         }
         let split = value.split(separator: ",").map { String($0) }
         guard split.count >= 3 else {

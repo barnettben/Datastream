@@ -51,9 +51,6 @@ final class RecordTests: XCTestCase {
         }
     }
     func testBaseRecordCreationFails() throws {
-        for recordString in RecordTests.invalidChecksumRecordStrings {
-            XCTAssertThrowsError(try BaseRecord(string: recordString))
-        }
         for recordString in RecordTests.invalidLengthRecordStrings {
             XCTAssertThrowsError(try BaseRecord(string: recordString))
         }
