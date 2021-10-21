@@ -47,15 +47,6 @@ public extension Record {
 }
 
 
-enum RecordError: Error {
-    case invalidLength
-    case invalidChecksum
-    case nonNumberChecksum
-    case notEnoughContentSections
-    case unknownDescriptor(value: String)
-}
-
-
 /// A basic implementation of a datasteam record item
 ///
 /// Implements `Record`. It also provides:
@@ -74,17 +65,17 @@ public struct BaseRecord: Record {
     
     init(string value: String) throws {
         guard BaseRecord.validateRecordLength(value) else {
-            throw RecordError.invalidLength
+            throw DatastreamError(code: .invalidLength, recordContent: value)
         }
         let split = value.split(separator: ",").map { String($0) }
         guard split.count >= 3 else {
-            throw RecordError.notEnoughContentSections
+            throw DatastreamError(code: .notEnoughRecordSections, recordContent: value)
         }
         guard let ident = RecordDescriptor(rawValue: split.first!) else {
-            throw RecordError.unknownDescriptor(value: split.first!)
+            throw DatastreamError(code: .unknownDescriptor, recordContent: value)
         }
         guard let checksumValue = Int(split.last!) else {
-            throw RecordError.nonNumberChecksum
+            throw DatastreamError(code: .nonNumberChecksum, recordContent: value)
         }
         
         // Offset by one more than the record size to trim out the commas
