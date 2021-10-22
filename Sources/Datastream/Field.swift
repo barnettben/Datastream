@@ -7,6 +7,12 @@
 
 import Foundation
 
+/*
+ At the moment, `Field` is an implementation detail. It's only use is for
+ extracting information into a record type and doesn't need to be surfaced to
+ users of the library.
+ */
+
 /// An item identifying the location of an entry within a record string
 struct Field {
     var location: Int
