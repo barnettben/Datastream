@@ -19,5 +19,6 @@ public enum ErrorCode {
     case nonNumberChecksum
     case notEnoughRecordSections
     case invalidContentCount
+    case invalidContentType
     case unknownDescriptor
 }

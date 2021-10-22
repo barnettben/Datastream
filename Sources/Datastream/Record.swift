@@ -7,10 +7,6 @@
 
 import Foundation
 
-private let RECORD_LENGTH: Int = 76
-private let DESCRIPTOR_LENGTH: Int = 2
-private let CHECKSUM_LENGTH: Int = 5
-
 
 /// The minimal properties of a datasteam record item
 ///
@@ -28,21 +24,38 @@ public protocol Record {
 }
 
 
-public extension Record {
+extension Record {
     
-    static func validateRecordString(_ value: String) -> Bool {
-        return validateRecordLength(value) && validateRecordStringChecksum(value)
+    /// Reports if a given string matches the specification of a record
+    ///
+    /// It must be 76 ascii characters long and have a valid checksum
+    /// - Parameter content: A string to check for validity
+    /// - Returns: `true` if valid, `false` if not
+    public static func validateRecordString(_ content: String) -> Bool {
+        return validateRecordLength(content) && validateRecordStringChecksum(content)
     }
     
-    static func validateRecordLength(_ value: String) -> Bool {
-        return (value.lengthOfBytes(using: .ascii) == RECORD_LENGTH)
+    /// Reports if a given string is the correct length to be a record
+    ///
+    /// It must be 76 ascii characters long
+    /// - Parameter content: A string to check for validity
+    /// - Returns: `true` if valid, `false` if not
+    public static func validateRecordLength(_ content: String) -> Bool {
+        return (content.lengthOfBytes(using: .ascii) == RecordConstants.checksumField.length)
     }
     
-    static func validateRecordStringChecksum(_ content: String) -> Bool {
-        let endOffset = content.index(content.endIndex, offsetBy: -CHECKSUM_LENGTH)
-        let contentToCheck = content.prefix(upTo: endOffset)
-        let expectedSum = Int(content.suffix(CHECKSUM_LENGTH))!
-        return (expectedSum == contentToCheck.asciiValues.map({ Int($0) }).reduce(0, +))
+    /// Reports if a given record string has a valid checksum
+    /// - Parameter content: A record string to validate for checksum correctness
+    /// - Returns: `true` if valid, `false` if not
+    public static func validateRecordStringChecksum(_ content: String) -> Bool {
+        do {
+            let endOffset = content.index(content.endIndex, offsetBy: -RecordConstants.checksumField.length)
+            let contentToCheck = content.prefix(upTo: endOffset)
+            let expected: Int = try RecordConstants.checksumField.extractValue(from: content)
+            return (expected == contentToCheck.asciiValues.map({ Int($0) }).reduce(0, +))
+        } catch {
+            return false
+        }
     }
 }
 
@@ -50,7 +63,7 @@ public extension Record {
 /// A basic implementation of a datasteam record item
 ///
 /// Implements `Record`. It also provides:
-/// - A variable containing the body content of the record
+/// - A variable containing the string comprising this record
 /// - An initializer to build a `BaseRecord` from a string
 public struct BaseRecord: Record {
     private(set) public var descriptor: RecordDescriptor
@@ -67,25 +80,9 @@ public struct BaseRecord: Record {
         guard BaseRecord.validateRecordLength(value) else {
             throw DatastreamError(code: .invalidLength, recordContent: value)
         }
-        let split = value.split(separator: ",").map { String($0) }
-        guard split.count >= 3 else {
-            throw DatastreamError(code: .notEnoughRecordSections, recordContent: value)
-        }
-        guard let ident = RecordDescriptor(rawValue: split.first!) else {
-            throw DatastreamError(code: .unknownDescriptor, recordContent: value)
-        }
-        guard let checksumValue = Int(split.last!) else {
-            throw DatastreamError(code: .nonNumberChecksum, recordContent: value)
-        }
         
-        // Offset by one more than the record size to trim out the commas
-        // used to separate records. This will make later processing easier
-        let contentStart = value.index(value.startIndex, offsetBy: DESCRIPTOR_LENGTH+1)
-        let contentEnd = value.index(value.endIndex, offsetBy: -CHECKSUM_LENGTH-1)
-        let trimmedContent = value[contentStart ..< contentEnd]
-        
-        descriptor = ident
-        content = String(trimmedContent)
-        checksum = checksumValue
+        descriptor = try RecordConstants.descriptorField.extractValue(from: value)
+        content = value
+        checksum = try RecordConstants.checksumField.extractValue(from: value)
     }
 }
