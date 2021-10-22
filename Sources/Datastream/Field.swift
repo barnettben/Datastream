@@ -36,6 +36,13 @@ extension Field {
         }
         return value
     }
+    func extractValue(from content: String) throws -> Date {
+        let field: String = try extractValue(from: content)
+        guard let value = DateFormatter.datastreamDateFormat.date(from: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
     
     func extractValue(from content: String) throws -> RecordDescriptor {
         let field: String = try extractValue(from: content)
