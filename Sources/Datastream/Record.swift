@@ -41,7 +41,7 @@ extension Record {
     /// - Parameter content: A string to check for validity
     /// - Returns: `true` if valid, `false` if not
     public static func validateRecordLength(_ content: String) -> Bool {
-        return (content.lengthOfBytes(using: .ascii) == RecordConstants.checksumField.length)
+        return (content.lengthOfBytes(using: .ascii) == RecordConstants.recordLength)
     }
     
     /// Reports if a given record string has a valid checksum
