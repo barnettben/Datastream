@@ -57,4 +57,11 @@ extension Field {
         }
         return value
     }
+    func extractValue(from content: String) throws -> RecordingScheme {
+        let field: String = try extractValue(from: content)
+        guard let number = Int(field), let value = RecordingScheme(rawValue: number) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
 }

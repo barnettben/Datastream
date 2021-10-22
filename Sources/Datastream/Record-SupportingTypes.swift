@@ -13,3 +13,20 @@ internal struct RecordConstants {
     static let checksumField = Field(location: 71, length: 5)
 }
 
+public enum RecordingScheme: Int {
+    case premium   = 1
+    case cmr       = 2
+    case pmr       = 3
+    case fmr       = 4
+    case goats     = 5
+    case isleOfMan = 6
+    case jersey    = 7
+    case guernsey  = 8
+    case standard1 = 11
+    case standard2 = 12
+    case standard3 = 13
+    case standard4 = 14
+    case basic1    = 15
+    case basic2    = 16
+}
+

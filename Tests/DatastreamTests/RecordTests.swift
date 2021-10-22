@@ -56,4 +56,11 @@ final class RecordTests: XCTestCase {
         }
     }
     
+    func testNMRDetails() throws {
+        let content = RecordTests.goodRecordStrings.first!
+        let record = try NMRDetails(string: content)
+        XCTAssertEqual(record.descriptor, .header1)
+        XCTAssertEqual(record.nationalHerdMark, "89000")
+        XCTAssertEqual(record.checksum, 3750)
+    }
 }
