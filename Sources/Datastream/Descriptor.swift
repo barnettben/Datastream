@@ -109,6 +109,11 @@ extension RecordDescriptor {
         let descriptorPrefix = String(rawValue.first!)
         return RecordSection(rawValue: descriptorPrefix)!
     }
+    
+    /// Records types marked as being for internal use only
+    public static var privateRecordDescriptors: [RecordDescriptor] {
+        return [.header9, .headerA, .headerB, .headerC, .statementNMRUse, .statementMMBUse]
+    }
 }
 
 
