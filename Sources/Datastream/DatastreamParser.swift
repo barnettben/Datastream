@@ -62,7 +62,10 @@ extension DatastreamParser {
                 guard let line = try await lineIterator.next(), line.isEmpty == false else {
                     return nil
                 }
-                let record = try BaseRecord(string: line)
+                guard let descriptor = RecordDescriptor(rawValue: String(line.prefix(2))) else {
+                    throw DatastreamError(code: .unknownDescriptor, recordContent: line)
+                }
+                let record = try descriptor.recordType.init(string: line)
                 return record
             }
         }

@@ -17,4 +17,18 @@ final class DatastreamParserTests: XCTestCase {
             XCTAssertNotNil(record)
         }
     }
+    
+    func testStructSpecialising() async throws {
+        let fileURL = Bundle.module.url(forResource: "SampleRecords", withExtension: "txt")!
+        let parser = DatastreamParser(url: fileURL)
+        
+        var iterator = parser.records.makeAsyncIterator()
+        var currentRecord = try await iterator.next()
+        XCTAssertTrue(currentRecord is NMRDetails)
+        currentRecord = try await iterator.next()
+        XCTAssertTrue(currentRecord is BaseRecord)
+        currentRecord = try await iterator.next()
+        XCTAssertTrue(currentRecord is BaseRecord)
+        
+    }
 }
