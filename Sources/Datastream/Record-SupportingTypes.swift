@@ -30,3 +30,21 @@ public enum RecordingScheme: Int {
     case basic2    = 16
 }
 
+public enum ServiceType: String {
+    case automatic = "A"
+    case manual    = "M"
+    case unknown   = " "
+}
+
+public enum CowCardPrinting: Int {
+    case none       = 0
+    case end305     = 1
+    case endNatural = 2
+    case both       = 3
+}
+
+public enum CellCountMembership: Int {
+    case notaMember    = 0
+    case currentMember = 1
+    case resigned      = 3 // There is no two
+}

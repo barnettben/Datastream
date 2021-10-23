@@ -21,6 +21,8 @@ public protocol Record {
     var checksum: Int { get }
     
     var checksumIsValid: Bool { get }
+    
+    init(string content: String) throws
 }
 
 
@@ -76,13 +78,13 @@ public struct BaseRecord: Record {
         return BaseRecord.validateRecordStringChecksum(stringValue)
     }
     
-    init(string value: String) throws {
-        guard BaseRecord.validateRecordLength(value) else {
-            throw DatastreamError(code: .invalidLength, recordContent: value)
+    public init(string content: String) throws {
+        guard BaseRecord.validateRecordLength(content) else {
+            throw DatastreamError(code: .invalidLength, recordContent: content)
         }
         
-        descriptor = try RecordConstants.descriptorField.extractValue(from: value)
-        content = value
-        checksum = try RecordConstants.checksumField.extractValue(from: value)
+        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        self.content = content
+        checksum = try RecordConstants.checksumField.extractValue(from: content)
     }
 }

@@ -42,6 +42,14 @@ extension Field {
         }
         return value
     }
+    func extractValue(from content: String) throws -> Bool {
+        let field: String = try extractValue(from: content)
+        guard field.lengthOfBytes(using: .ascii) == 1 else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        // Flag fields can be empty, 1/0, or Y/N. If empty, 0 or N, say false. All others true.
+        return !(field.isEmpty || field == "0" || field == "N")
+    }
     func extractValue(from content: String) throws -> Date {
         let field: String = try extractValue(from: content)
         guard let value = DateFormatter.datastreamDateFormat.date(from: field) else {
@@ -58,8 +66,29 @@ extension Field {
         return value
     }
     func extractValue(from content: String) throws -> RecordingScheme {
+        let field: Int = try extractValue(from: content)
+        guard let value = RecordingScheme(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> ServiceType {
         let field: String = try extractValue(from: content)
-        guard let number = Int(field), let value = RecordingScheme(rawValue: number) else {
+        guard let value = ServiceType(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> CowCardPrinting {
+        let field: Int = try extractValue(from: content)
+        guard let value = CowCardPrinting(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> CellCountMembership {
+        let field: Int = try extractValue(from: content)
+        guard let value = CellCountMembership(rawValue: field) else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
         return value
