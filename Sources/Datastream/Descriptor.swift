@@ -11,14 +11,14 @@ public enum RecordDescriptor: String {
     
     // MARK: Herd details
     // Herd fixed records
-    case header1 = "H1"
-    case header2 = "H2"
-    case header3 = "H3"
-    case header4 = "H4"
-    case header5 = "H5"
-    case header6 = "H6"
-    case header7 = "H7"
-    case header8 = "H8"
+    case nmrDetails = "H1"
+    case address1 = "H2"
+    case address2 = "H3"
+    case address3 = "H4"
+    case address4 = "H5"
+    case address5 = "H6"
+    case serviceIndicators = "H7"
+    case serviceIndicatorsContinued = "H8"
     case header9 = "H9" // NMR private use
     case headerA = "HA" // NMR private use
     case headerB = "HB" // NMR private use

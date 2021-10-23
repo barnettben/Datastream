@@ -24,7 +24,7 @@ public struct NMRDetails: Record {
 
     public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)
-        guard descriptor == .header1 else {
+        guard descriptor == .nmrDetails else {
             fatalError("Attempting to create NMRDetails with wrong record type: \(descriptor)")
         }
         checksum = try RecordConstants.checksumField.extractValue(from: content)
@@ -57,7 +57,7 @@ public struct ServiceIndicators: Record {
 
     public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)
-        guard descriptor == .header7 else {
+        guard descriptor == .serviceIndicators else {
             fatalError("Attempting to create ServiceIndicators with wrong record type: \(descriptor)")
         }
         checksum = try RecordConstants.checksumField.extractValue(from: content)
@@ -83,7 +83,7 @@ public struct ServiceIndicatorsContinued: Record {
 
     public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)
-        guard descriptor == .header8 else {
+        guard descriptor == .serviceIndicatorsContinued else {
             fatalError("Attempting to create ServiceIndicatorsContinued with wrong record type: \(descriptor)")
         }
         checksum = try RecordConstants.checksumField.extractValue(from: content)
