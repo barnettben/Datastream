@@ -21,6 +21,7 @@ public protocol Record {
     var checksum: Int { get }
     
     var checksumIsValid: Bool { get }
+    static var representableDescriptors: [RecordDescriptor] { get }
     
     init(string content: String) throws
 }
@@ -61,6 +62,14 @@ extension Record {
     }
 }
 
+extension Record {
+    internal static func assertCanRepresentDescriptor(_ descriptor: RecordDescriptor) {
+        guard self.representableDescriptors.contains(descriptor) else {
+            fatalError("Attempting to create \(type(of: self)) with wrong record type: \(descriptor)")
+        }
+    }
+}
+
 
 /// A basic implementation of a datasteam record item
 ///
@@ -76,6 +85,9 @@ public struct BaseRecord: Record {
         let checksumString = String(format: "%05d", checksum)
         let stringValue = "\(descriptor.rawValue),\(content),\(checksumString)"
         return BaseRecord.validateRecordStringChecksum(stringValue)
+    }
+    public static var representableDescriptors: [RecordDescriptor] {
+        return RecordDescriptor.allCases
     }
     
     public init(string content: String) throws {

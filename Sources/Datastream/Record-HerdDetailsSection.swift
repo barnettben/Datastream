@@ -11,6 +11,9 @@ public struct NMRDetails: Record {
     public var descriptor: RecordDescriptor
     public var checksum: Int
     public var checksumIsValid: Bool
+    public static var representableDescriptors: [RecordDescriptor] {
+        return [.nmrDetails]
+    }
 
     public var nmrCounty: Int
     public var nmrOffice: Int
@@ -24,9 +27,7 @@ public struct NMRDetails: Record {
 
     public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)
-        guard descriptor == .nmrDetails else {
-            fatalError("Attempting to create NMRDetails with wrong record type: \(descriptor)")
-        }
+        Self.assertCanRepresentDescriptor(descriptor)
         checksum = try RecordConstants.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
 
@@ -46,6 +47,9 @@ public struct ServiceIndicators: Record {
     public var descriptor: RecordDescriptor
     public var checksum: Int
     public var checksumIsValid: Bool
+    public static var representableDescriptors: [RecordDescriptor] {
+        return [.serviceIndicators]
+    }
 
     public var county: String
     public var postcode: String
@@ -57,9 +61,7 @@ public struct ServiceIndicators: Record {
 
     public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)
-        guard descriptor == .serviceIndicators else {
-            fatalError("Attempting to create ServiceIndicators with wrong record type: \(descriptor)")
-        }
+        Self.assertCanRepresentDescriptor(descriptor)
         checksum = try RecordConstants.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
 
@@ -77,15 +79,16 @@ public struct ServiceIndicatorsContinued: Record {
     public var descriptor: RecordDescriptor
     public var checksum: Int
     public var checksumIsValid: Bool
+    public static var representableDescriptors: [RecordDescriptor] {
+        return [.serviceIndicatorsContinued]
+    }
 
     public var isHerdwatchMember: Bool
     public var cellCountMembership: CellCountMembership
 
     public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)
-        guard descriptor == .serviceIndicatorsContinued else {
-            fatalError("Attempting to create ServiceIndicatorsContinued with wrong record type: \(descriptor)")
-        }
+        Self.assertCanRepresentDescriptor(descriptor)
         checksum = try RecordConstants.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
 

@@ -104,6 +104,9 @@ public enum RecordDescriptor: String {
     case breedRecord3 = "W6"
 }
 
+extension RecordDescriptor: CaseIterable {
+}
+
 extension RecordDescriptor {
     public var section: RecordSection {
         let descriptorPrefix = String(rawValue.first!)
