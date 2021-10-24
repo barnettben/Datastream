@@ -48,3 +48,14 @@ public enum CellCountMembership: Int {
     case currentMember = 1
     case resigned      = 3 // There is no two
 }
+
+public enum DifferenceCode: Int {
+    case notDefined       = 0
+    case noSampleTaken    = 1
+    case yieldsMissing    = 2
+    case notReceivedAtLab = 3
+    case noSampleTaken2   = 4
+    case spilt            = 5
+    case spoiled          = 6
+    case sediment         = 7
+}

@@ -42,6 +42,16 @@ extension Field {
         }
         return value
     }
+    func extractValue(from content: String, divisor: Double? = nil) throws -> Double {
+        let field: String = try extractValue(from: content)
+        guard var value = Double(field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        if let divisor = divisor {
+            value = value / divisor
+        }
+        return value
+    }
     func extractValue(from content: String) throws -> Bool {
         let field: String = try extractValue(from: content)
         guard field.lengthOfBytes(using: .ascii) == 1 else {
@@ -89,6 +99,13 @@ extension Field {
     func extractValue(from content: String) throws -> CellCountMembership {
         let field: Int = try extractValue(from: content)
         guard let value = CellCountMembership(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> DifferenceCode {
+        let field: Int = try extractValue(from: content)
+        guard let value = DifferenceCode(rawValue: field) else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
         return value

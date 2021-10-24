@@ -26,9 +26,9 @@ final class DatastreamParserTests: XCTestCase {
         var currentRecord = try await iterator.next()
         XCTAssertTrue(currentRecord is NMRDetails)
         currentRecord = try await iterator.next()
-        XCTAssertTrue(currentRecord is BaseRecord)
+        XCTAssertTrue(currentRecord is RecordingPart1)
         currentRecord = try await iterator.next()
-        XCTAssertTrue(currentRecord is BaseRecord)
+        XCTAssertTrue(currentRecord is RecordingPart2)
         
     }
 }

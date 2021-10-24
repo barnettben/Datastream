@@ -25,8 +25,8 @@ public enum RecordDescriptor: String {
     case headerC = "HC" // NMR private use
     
     // Herd recording records
-    case recordingRecord1 = "HD"
-    case recordingRecord2 = "HE"
+    case recordingPart1 = "HD"
+    case recordingPart2 = "HE"
     
     // MARK: Cow details
     case animalIdentity     = "C1"
@@ -147,10 +147,10 @@ extension RecordDescriptor {
             return BaseRecord.self
         case .headerC:
             return BaseRecord.self
-        case .recordingRecord1:
-            return BaseRecord.self
-        case .recordingRecord2:
-            return BaseRecord.self
+        case .recordingPart1:
+            return RecordingPart1.self
+        case .recordingPart2:
+            return RecordingPart2.self
         case .animalIdentity:
             return BaseRecord.self
         case .animalOtherDetails:
