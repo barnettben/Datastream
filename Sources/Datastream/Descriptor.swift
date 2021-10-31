@@ -112,6 +112,9 @@ extension RecordDescriptor {
         let descriptorPrefix = String(rawValue.first!)
         return RecordSection(rawValue: descriptorPrefix)!
     }
+    public var isPrivateUse: Bool {
+        return RecordDescriptor.privateRecordDescriptors.contains(self)
+    }
     
     /// Records types marked as being for internal use only
     public static var privateRecordDescriptors: [RecordDescriptor] {
