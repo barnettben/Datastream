@@ -23,6 +23,6 @@ public struct TextRecord: Record {
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         Self.assertCanRepresentDescriptor(descriptor)
         
-        self.content = try Field(location: 3, length: 35).extractValue(from: content)
+        self.content = try Field(location: 3, length: 35).extractValue(from: content).trimmingCharacters(in: CharacterSet.whitespaces)
     }
 }

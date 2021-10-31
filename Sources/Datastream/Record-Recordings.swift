@@ -71,9 +71,9 @@ public struct RecordingPart2: Record {
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         self.bulkYield = try Field(location: 3, length: 5).extractValue(from: content)
-        self.bulkFatPct = try Field(location: 9, length: 4).extractValue(from: content)
-        self.bulkProteinPct = try Field(location: 14, length: 4).extractValue(from: content)
-        self.bulkLactosePct = try Field(location: 19, length: 4).extractValue(from: content)
+        self.bulkFatPct = try Field(location: 9, length: 4).extractValue(from: content, divisor: 100)
+        self.bulkProteinPct = try Field(location: 14, length: 4).extractValue(from: content, divisor: 100)
+        self.bulkLactosePct = try Field(location: 19, length: 4).extractValue(from: content, divisor: 100)
         self.herdProductionBase = try Field(location: 24, length: 6).extractValue(from: content)
         self.bulkCellCount = try Field(location: 51, length: 4).extractValue(from: content)
     }
