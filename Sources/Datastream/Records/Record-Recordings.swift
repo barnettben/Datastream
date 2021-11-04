@@ -49,6 +49,19 @@ public struct RecordingPart1: Record {
     }
 }
 
+public enum DifferenceCode: Int {
+    case notDefined       = 0
+    case noSampleTaken    = 1
+    case yieldsMissing    = 2
+    case notReceivedAtLab = 3
+    case noSampleTaken2   = 4
+    case spilt            = 5
+    case spoiled          = 6
+    case sediment         = 7
+}
+
+// MARK: -
+
 public struct RecordingPart2: Record {
     public var descriptor: RecordDescriptor
     public var checksum: Int
@@ -78,3 +91,4 @@ public struct RecordingPart2: Record {
         self.bulkCellCount = try Field(location: 51, length: 4).extractValue(from: content)
     }
 }
+
