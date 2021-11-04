@@ -26,9 +26,22 @@ final class DatastreamParserTests: XCTestCase {
         var currentRecord = try await iterator.next()
         XCTAssertTrue(currentRecord is NMRDetails)
         currentRecord = try await iterator.next()
-        XCTAssertTrue(currentRecord is RecordingPart1)
+        XCTAssertTrue(currentRecord is TextRecord)
         currentRecord = try await iterator.next()
-        XCTAssertTrue(currentRecord is RecordingPart2)
-        
+        XCTAssertTrue(currentRecord is TextRecord)
+    }
+    
+    func testParser() async {
+        let fileURL = Bundle.module.url(forResource: "SampleRecords", withExtension: "txt")!
+        let parser = DatastreamParser(url: fileURL)
+        do {
+            let _ = try await parser.parse()
+        } catch let error as DatastreamError {
+            XCTFail(error.localizedDescription)
+            return
+        } catch {
+            XCTFail("Non-Datastream error thrown: \(error)")
+            return
+        }
     }
 }

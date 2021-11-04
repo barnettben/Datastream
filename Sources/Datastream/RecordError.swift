@@ -21,4 +21,5 @@ public enum ErrorCode {
     case invalidContentCount
     case invalidContentType
     case unknownDescriptor
+    case malformedInput
 }
