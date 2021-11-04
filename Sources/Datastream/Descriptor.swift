@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Represents the type of a given record
 public enum RecordDescriptor: String {
     
     // MARK: Herd details
