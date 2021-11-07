@@ -29,15 +29,14 @@ There are two primary options for parsing:
 ### Sections
 
 - ``HerdDetails``
-- ``NMRInformation``
 - ``HerdRecording``
+- ``Animal``
 
 ### Record-Based Parsing
 
 - ``AsyncRecordSequence``
 - ``Record``
 - ``RecordDescriptor``
-- ``RecordSection``
 - ``BaseRecord``
 - ``TextRecord``
 - ``NMRDetails``
@@ -45,3 +44,8 @@ There are two primary options for parsing:
 - ``ServiceIndicatorsContinued``
 - ``RecordingPart1``
 - ``RecordingPart2``
+- ``AnimalIdentityRecord``
+- ``AnimalOtherDetailsRecord``
+- ``AnimalNameRecord``
+- ``AnimalParentsRecord``
+- ``PTARecord``
