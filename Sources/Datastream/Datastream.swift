@@ -11,6 +11,7 @@ import Foundation
 public struct Datastream {
     public var herdDetails: HerdDetails
     public var recordings: [HerdRecording]
+    public var animals: [Animal]
 }
 
 extension Datastream {

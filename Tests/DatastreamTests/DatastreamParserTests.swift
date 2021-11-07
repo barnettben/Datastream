@@ -35,7 +35,9 @@ final class DatastreamParserTests: XCTestCase {
         let fileURL = Bundle.module.url(forResource: "SampleRecords", withExtension: "txt")!
         let parser = DatastreamParser(url: fileURL)
         do {
-            let _ = try await parser.parse()
+            let content = try await parser.parse()
+            XCTAssertEqual(content.recordings.count, 2)
+            XCTAssertEqual(content.animals.count, 1)
         } catch let error as DatastreamError {
             XCTFail(error.localizedDescription)
             return

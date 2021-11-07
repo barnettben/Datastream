@@ -67,6 +67,10 @@ extension Field {
         }
         return value
     }
+    func extractValue(from content: String) throws -> Date? {
+        let field: String = try extractValue(from: content)
+        return DateFormatter.datastreamDateFormat.date(from: field)
+    }
     
     func extractValue(from content: String) throws -> RecordDescriptor {
         let field: String = try extractValue(from: content)
@@ -106,6 +110,49 @@ extension Field {
     func extractValue(from content: String) throws -> DifferenceCode {
         let field: Int = try extractValue(from: content)
         guard let value = DifferenceCode(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> IdentityType {
+        let field: Int = try extractValue(from: content)
+        guard let value = IdentityType(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> PedigreeStatus {
+        let field: String = try extractValue(from: content)
+        guard let firstChar = field.first,
+              let value = PedigreeStatus(rawValue: firstChar) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> IdentityAuthenticity {
+        let field: Int = try extractValue(from: content)
+        guard let value = IdentityAuthenticity(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> LeavingReason {
+        let field: Int = try extractValue(from: content)
+        guard let value = LeavingReason(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> EvaluationGroup {
+        let field: Int = try extractValue(from: content)
+        guard let value = EvaluationGroup(rawValue: field) else {
+            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+        }
+        return value
+    }
+    func extractValue(from content: String) throws -> EvaluationSource {
+        let field: Int = try extractValue(from: content)
+        guard let value = EvaluationSource(rawValue: field) else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
         return value

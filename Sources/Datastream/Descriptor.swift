@@ -35,6 +35,9 @@ public enum RecordDescriptor: String {
     case animalName         = "C3"
     case animalSireDam      = "C4"
     case animalPTA          = "C5"
+    case animalPTA2         = "C6"
+    case animalPTA3         = "C7"
+    case animalPTA4         = "C8"
     
     // MARK: Statement section
     case statementSectionLeader = "S0"
@@ -156,15 +159,21 @@ extension RecordDescriptor {
         case .recordingPart2:
             return RecordingPart2.self
         case .animalIdentity:
-            return BaseRecord.self
+            return AnimalIdentityRecord.self
         case .animalOtherDetails:
-            return BaseRecord.self
+            return AnimalOtherDetailsRecord.self
         case .animalName:
-            return BaseRecord.self
+            return AnimalNameRecord.self
         case .animalSireDam:
-            return BaseRecord.self
+            return AnimalParentsRecord.self
         case .animalPTA:
-            return BaseRecord.self
+            return PTARecord.self
+        case .animalPTA2:
+            return PTARecord.self
+        case .animalPTA3:
+            return PTARecord.self
+        case .animalPTA4:
+            return PTARecord.self
         case .statementSectionLeader:
             return BaseRecord.self
         case .cowIDRecord:

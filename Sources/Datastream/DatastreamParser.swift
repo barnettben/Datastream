@@ -32,8 +32,9 @@ internal class DatastreamParser {
         // These need doing in the order they appear in the datastream file
         let herdDetails = try await parseHerdDetailsSection()
         let recordings = try await parseHerdRecordingsSection()
+        let animals = try await parseAnimalDetailsSection()
         
-        return Datastream(herdDetails: herdDetails, recordings: recordings)
+        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals)
     }
 }
 
@@ -74,6 +75,29 @@ extension DatastreamParser {
             let p2 = recordingRecords[idx.advanced(by: 1)] as! RecordingPart2
             return HerdRecording(part1: p1, part2: p2)
         }
+    }
+    
+    private func parseAnimalDetailsSection() async throws -> [Animal] {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.descriptor == .animalIdentity,
+                     "Iterator must start at C1 to use \(#function)")
+        
+        // Batch up records C1 - C8 then make an animal from them
+        var batchAnimalRecords: [RecordDescriptor : Record] = [:]
+        var parsedAnimals: [Animal] = []
+        repeat {
+            guard let currentRecord = try await recordIterator!.next() else { break }
+            batchAnimalRecords[currentRecord.descriptor] = currentRecord
+            
+            let peekedItem = try await recordIterator!.peek()
+            if peekedItem?.descriptor == .animalIdentity || peekedItem?.descriptor.section != .animal {
+                parsedAnimals.append(try Animal(records: batchAnimalRecords))
+                batchAnimalRecords = [:]
+            }
+        } while try await recordIterator!.peek()?.descriptor.section == .animal
+        
+        return parsedAnimals
     }
 }
 
@@ -140,5 +164,62 @@ extension HerdRecording {
                  bulkLactosePct: part2.bulkLactosePct,
              herdProductionBase: part2.herdProductionBase,
                   bulkCellCount: part2.bulkCellCount)
+    }
+}
+
+extension Animal {
+    fileprivate init(records: [RecordDescriptor : Record]) throws {
+        guard let c1 = records[.animalIdentity] as? AnimalIdentityRecord,
+              let c2 = records[.animalOtherDetails] as? AnimalOtherDetailsRecord,
+              let c3 = records[.animalName] as? AnimalNameRecord,
+              let c4 = records[.animalSireDam] as? AnimalParentsRecord,
+              let _ = records[.animalPTA] as? PTARecord
+              else {
+                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Must have one each of C1 through C5. Optionally up to C8.")
+              }
+        
+        let evaluations = records.values.compactMap({ $0 as? PTARecord }).map({
+            return GeneticEvaluation(evaluationGroup: $0.evaluationGroup,
+                                    evaluationSource: $0.evaluationSource,
+                                      evaluationDate: $0.evaluationDate,
+                                           ptaMilkKG: $0.ptaMilkKG,
+                                            ptaFatKG: $0.ptaFatKG,
+                                        ptaProteinKG: $0.ptaProteinKG,
+                                           ptaFatPct: $0.ptaFatPct,
+                                       ptaProteinPct: $0.ptaProteinPct,
+                                         reliability: $0.reliability)
+        })
+        let dam = AnimalParent(identity: c4.damIdentity,
+                           identityType: c4.damIdentityType,
+                                  breed: c4.damBreed,
+                         pedigreeStatus: c4.damPedigreeStatus,
+                   identityAuthenticity: c4.damIdentityAuthenticity)
+        let sire = AnimalParent(identity: c4.sireIdentity,
+                            identityType: c4.sireIdentityType,
+                                   breed: c4.sireBreed,
+                          pedigreeStatus: nil,
+                    identityAuthenticity: nil)
+        self.init(nmrHerdNumber: c1.nmrHerdNumber,
+                      aliveFlag: c1.liveFlag,
+                     lineNumber: c1.lineNumber,
+                        breedID: c1.breedID,
+                       identity: c1.identityNumber,
+                         idType: c1.identityType,
+                 pedigreeStatus: c1.pedigreeStatus,
+                hbnAuthenticity: c1.hbnAuthenticity,
+           identityAuthenticity: c1.earmarkAuthenticity,
+               alternativeBreed: c2.alternativeBreed,
+                  alternativeID: c2.alternativeIdentity,
+                      birthDate: c2.birthDate,
+                   isYoungstock: c2.isYoungstock,
+                  herdEntryDate: c2.entryDate,
+                   herdExitDate: c2.exitDate,
+                  leavingReason: c2.leavingReason,
+                classChangeDate: c2.classChangeDate,
+                      shortName: c3.shortName,
+                       longName: c3.longName,
+                            dam: dam,
+                           sire: sire,
+                    evaluations: evaluations)
     }
 }
