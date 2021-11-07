@@ -58,6 +58,12 @@ public enum DifferenceCode: Int {
     case spilt            = 5
     case spoiled          = 6
     case sediment         = 7
+    
+    /// Unknown reason
+    ///
+    /// This has been found in real-life files, but is not present
+    /// in the specification.
+    case unknown          = 8
 }
 
 // MARK: -
