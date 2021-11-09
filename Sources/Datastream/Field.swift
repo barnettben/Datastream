@@ -129,9 +129,9 @@ extension Field {
         }
         return value
     }
-    func extractValue(from content: String) throws -> IdentityAuthenticity {
+    func extractValue(from content: String) throws -> ItemAuthenticity {
         let field: Int = try extractValue(from: content)
-        guard let value = IdentityAuthenticity(rawValue: field) else {
+        guard let value = ItemAuthenticity(rawValue: field) else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
         return value

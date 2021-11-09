@@ -27,8 +27,8 @@ public struct AnimalIdentityRecord: Record {
     public var identityNumber: String
     public var identityType: IdentityType
     public var pedigreeStatus: PedigreeStatus
-    public var hbnAuthenticity: IdentityAuthenticity
-    public var earmarkAuthenticity: IdentityAuthenticity
+    public var hbnAuthenticity: ItemAuthenticity
+    public var earmarkAuthenticity: ItemAuthenticity
     
 
     public init(string content: String) throws {
@@ -125,7 +125,7 @@ public struct AnimalParentsRecord: Record {
     public var damIdentity: String
     public var damIdentityType: IdentityType
     public var damPedigreeStatus: PedigreeStatus
-    public var damIdentityAuthenticity: IdentityAuthenticity
+    public var damIdentityAuthenticity: ItemAuthenticity
     
     public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)

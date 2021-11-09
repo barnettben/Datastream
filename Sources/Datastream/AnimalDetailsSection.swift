@@ -38,10 +38,10 @@ public struct Animal {
     public var pedigreeStatus: PedigreeStatus
     
     /// Indicates whether the identity is genuine
-    public var hbnAuthenticity: IdentityAuthenticity
+    public var hbnAuthenticity: ItemAuthenticity
     
     /// Indicates whether the identity is genuine
-    public var identityAuthenticity: IdentityAuthenticity
+    public var identityAuthenticity: ItemAuthenticity
     
     /// An alternative breed for this animal
     public var alternativeBreed: Int
@@ -180,7 +180,11 @@ extension PedigreeStatus: RawRepresentable {
     }
 }
 
-public enum IdentityAuthenticity: Int {
+/// Whether a given field is 'authentic'.
+///
+/// I'm not certain what 'authentic' means here. Likely whether or not
+/// a given identity or event is registered with an appropriate authority.
+public enum ItemAuthenticity: Int {
     case authentic = 0
     case nonAuthentic = 1
     case computerGenerated = 3
@@ -230,7 +234,7 @@ public struct AnimalParent {
     /// Available options are the same as those used for
     /// the id authenticity used in ``Animal``
     /// - Important: This property is not used for sires and will be `nil`
-    public var identityAuthenticity: IdentityAuthenticity?
+    public var identityAuthenticity: ItemAuthenticity?
 }
 
 /// Represents how well a given animal can pass on its useful genetic features to offspring
