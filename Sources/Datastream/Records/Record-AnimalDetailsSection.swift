@@ -172,10 +172,10 @@ public struct PTARecord: Record {
         evaluationSource = try Field(location: 6, length: 2).extractValue(from: content)
         evaluationDate = try Field(location: 9, length: 6).extractValue(from: content)
         ptaMilkKG = try Field(location: 16, length: 5).extractValue(from: content)
-        ptaFatKG = try Field(location: 22, length: 5).extractValue(from: content, divisor: 10)
-        ptaProteinKG = try Field(location: 28, length: 5).extractValue(from: content, divisor: 10)
-        ptaFatPct = try Field(location: 34, length: 5).extractValue(from: content, divisor: 100)
-        ptaProteinPct = try Field(location: 40, length: 5).extractValue(from: content, divisor: 100)
+        ptaFatKG = try Field(location: 22, length: 5, divisor: 10).extractValue(from: content)
+        ptaProteinKG = try Field(location: 28, length: 5, divisor: 10).extractValue(from: content)
+        ptaFatPct = try Field(location: 34, length: 5, divisor: 100).extractValue(from: content)
+        ptaProteinPct = try Field(location: 40, length: 5, divisor: 100).extractValue(from: content)
         reliability = try Field(location: 46, length: 2).extractValue(from: content)
     }
 }
