@@ -70,6 +70,16 @@ extension Record {
     }
 }
 
+extension Array where Array.Element == Record {
+    /// Returns the first record of a given type, if present
+    ///
+    /// - Parameter typed: A type conforming to Record to search for
+    /// - Returns: A `Record` of type `T`  if present, `nil` otherwise
+    @inlinable public func first<T: Record>(typed: T.Type) -> T? {
+        return first(where: { $0 is T }) as? T
+    }
+}
+
 
 /// A basic implementation of a datasteam record item
 ///
