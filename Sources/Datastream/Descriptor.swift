@@ -175,55 +175,55 @@ extension RecordDescriptor {
         case .animalPTA4:
             return PTARecord.self
         case .statementSectionLeader:
-            return BaseRecord.self
+            return StatementHeaderRecord.self
         case .cowIDRecord:
-            return BaseRecord.self
+            return CowIDRecord.self
         case .statementNMRUse:
             return BaseRecord.self
         case .currentLactationTotals:
-            return BaseRecord.self
+            return LactationDetailsRecord.self
         case .statementMMBUse:
             return BaseRecord.self
         case .eventWeighing:
-            return BaseRecord.self
+            return WeighingRecord.self
         case .eventService:
-            return BaseRecord.self
+            return ServiceRecord.self
         case .eventActualCalving:
-            return BaseRecord.self
+            return ActualCalvingRecord.self
         case .eventCalving3rdCalf:
-            return BaseRecord.self
+            return ActualThirdCalfRecord.self
         case .eventAssumedCalving:
-            return BaseRecord.self
+            return AssumedCalvingRecord.self
         case .eventNoSample:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventAssumed1x:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .event1x:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventAssumedDry:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventDry:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventSuckling:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventAbsent:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventBarren:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventAbort:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventSick:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventLame:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventMastitis:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventDead:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventSoldInPrevHerd:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .eventSold:
-            return BaseRecord.self
+            return OtherEventRecord.self
         case .lactationSectionLeader:
             return BaseRecord.self
         case .lactationFixedDetails:

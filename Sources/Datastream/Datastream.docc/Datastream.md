@@ -31,6 +31,7 @@ There are two primary options for parsing:
 - ``HerdDetails``
 - ``HerdRecording``
 - ``Animal``
+- ``AnimalStatement``
 
 ### Record-Based Parsing
 
@@ -38,6 +39,9 @@ There are two primary options for parsing:
 - ``Record``
 - ``RecordDescriptor``
 - ``BaseRecord``
+
+### Record types
+
 - ``TextRecord``
 - ``NMRDetails``
 - ``ServiceIndicators``
@@ -49,3 +53,12 @@ There are two primary options for parsing:
 - ``AnimalNameRecord``
 - ``AnimalParentsRecord``
 - ``PTARecord``
+- ``StatementHeaderRecord``
+- ``CowIDRecord``
+- ``WeighingRecord``
+- ``ServiceRecord``
+- ``ActualCalvingRecord``
+- ``ActualThirdCalfRecord``
+- ``AssumedCalvingRecord``
+- ``OtherEventRecord``
+- ``LactationDetailsRecord``

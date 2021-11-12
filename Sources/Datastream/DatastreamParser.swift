@@ -33,8 +33,10 @@ internal class DatastreamParser {
         let herdDetails = try await parseHerdDetailsSection()
         let recordings = try await parseHerdRecordingsSection()
         let animals = try await parseAnimalDetailsSection()
+        let nmrNumber = try await parseNMRNumber()
+        let statements = try await parseStatementsSection()
         
-        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals)
+        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements)
     }
 }
 
@@ -98,6 +100,42 @@ extension DatastreamParser {
         } while try await recordIterator!.peek()?.descriptor.section == .animal
         
         return parsedAnimals
+    }
+    
+    private func parseNMRNumber() async throws -> String {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.descriptor == .statementSectionLeader,
+                     "Iterator must start at S0 to use \(#function)")
+        
+        guard let s0 = try await recordIterator?.next() as? StatementHeaderRecord else {
+            throw DatastreamError(code: .malformedInput, recordContent: "Missing S0 record.")
+        }
+        
+        return s0.nmrNumber
+    }
+    
+    private func parseStatementsSection() async throws -> [AnimalStatement] {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.descriptor == .cowIDRecord,
+                     "Iterator must start at S1 to use \(#function)")
+        
+        // Batch up records S1 - SX then make an animal from them
+        var batchedStatementRecords = [Record]()
+        var parsedStatements: [AnimalStatement] = []
+        repeat {
+            guard let currentRecord = try await recordIterator!.next() else { break }
+            batchedStatementRecords.append(currentRecord)
+            
+            let peekedItem = try await recordIterator!.peek()
+            if peekedItem?.descriptor == .cowIDRecord || peekedItem?.descriptor.section != .statement {
+                parsedStatements.append(try AnimalStatement(records: batchedStatementRecords))
+                batchedStatementRecords = [Record]()
+            }
+        } while try await recordIterator!.peek()?.descriptor.section == .statement
+        
+        return parsedStatements
     }
 }
 
@@ -221,5 +259,121 @@ extension Animal {
                             dam: dam,
                            sire: sire,
                     evaluations: evaluations)
+    }
+}
+
+extension AnimalStatement {
+    fileprivate init(records: [Record]) throws {
+        guard let s1 = records.first(typed: CowIDRecord.self),
+              let sx = records.first(typed: LactationDetailsRecord.self)
+              else {
+                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Each animal statement must have at least S1 and SX records.")
+              }
+        let weighings = records.compactMap({ $0 as? WeighingRecord }).map { s3 in
+            WeighingEvent(recordingDate: s3.recordingDate,
+                             resultType: s3.resultType,
+                            timesMilked: s3.timesMilked,
+                          absenceReason: s3.absenceReason,
+                              milkYield: s3.milkYield,
+                                 fatPct: s3.fatPct,
+                             proteinPct: s3.proteinPct,
+                             lactosePct: s3.lactosePct,
+                              cellCount: s3.cellCount)
+        }
+        let services = records.compactMap({ $0 as? ServiceRecord }).map { s4 in
+            ServiceEvent(eventDate: s4.eventDate,
+                       isAuthentic: s4.isAuthentic,
+                         sireBreed: s4.sireBreed,
+                      sireIdentity: s4.sireIdentity,
+          sireIdentityAuthenticity: s4.sireIdentityAuthenticity,
+                   pregnancyStatus: s4.pregnancyStatus)
+        }
+        
+        var calvings = [CalvingEvent]()
+        if let s5 = records.first(typed: ActualCalvingRecord.self) {
+            if s5.calf1Sex != nil {
+                let calf1 = CalvingEvent(eventDate: s5.eventDate,
+                                 eventAuthenticity: s5.eventAuthenticity,
+                                         isAssumed: false,
+                                         calfBreed: s5.calf1Breed,
+                                      calfIdentity: s5.calf1Identity,
+                                  calfIdentityType: s5.calf1IdentityType,
+                          calfIdentityAuthenticity: s5.calf1IdentityAuthenticity,
+                                           calfSex: s5.calf1Sex!)
+                calvings.append(calf1)
+            }
+            if s5.calf2Sex != nil {
+                let calf2 = CalvingEvent(eventDate: s5.eventDate,
+                                 eventAuthenticity: s5.eventAuthenticity,
+                                         isAssumed: false,
+                                         calfBreed: s5.calf2Breed,
+                                      calfIdentity: s5.calf2Identity,
+                                  calfIdentityType: s5.calf2IdentityType,
+                          calfIdentityAuthenticity: s5.calf2IdentityAuthenticity,
+                                           calfSex: s5.calf2Sex!)
+                calvings.append(calf2)
+            }
+            // Do this inside if-let-s5 so we have access to s5 for the third calf
+            if let s6 = records.first(typed: ActualThirdCalfRecord.self) {
+                if s6.calfSex != nil {
+                    let calf3 = CalvingEvent(eventDate: s5.eventDate,
+                                     eventAuthenticity: s5.eventAuthenticity,
+                                             isAssumed: false,
+                                             calfBreed: s6.calfBreed,
+                                          calfIdentity: s6.calfIdentity,
+                                      calfIdentityType: s6.calfIdentityType,
+                              calfIdentityAuthenticity: s6.calfIdentityAuthenticity,
+                                               calfSex: s6.calfSex!)
+                    calvings.append(calf3)
+                }
+            }
+        }
+        if let s7 = records.first(typed: AssumedCalvingRecord.self) {
+            let assumedCalf = CalvingEvent(eventDate: s7.eventDate,
+                                   eventAuthenticity: .nonAuthentic,
+                                           isAssumed: true,
+                                           calfBreed: 0,
+                                        calfIdentity: "",
+                                    calfIdentityType: .noID,
+                            calfIdentityAuthenticity: .nonAuthentic,
+                                             calfSex: .dead)
+            calvings.append(assumedCalf)
+        }
+        let otherEvents = records.compactMap({ $0 as? OtherEventRecord }).map { record in
+            OtherEvent(eventDate: record.eventDate, eventAuthenticity: record.eventAuthenticity, eventType: record.descriptor)
+        }
+        let lactationDetails = LactationDetails(totalDays: sx.totalDays,
+                                                totalMilk: sx.totalMilk,
+                                                 totalFat: sx.totalFat,
+                                             totalProtein: sx.totalProtein,
+                                             totalLactose: sx.totalLactose,
+                                                   fatPct: sx.fatPct,
+                                               proteinPct: sx.proteinPct,
+                                               lactosePct: sx.lactosePct,
+                                               totalValue: sx.totalValue,
+                                     averagePencePerLitre: sx.averagePencePerLitre,
+                                              seasonality: sx.seasonality,
+                                         averageCellCount: sx.averageCellCount)
+        
+        
+        self.init(lineNumber: s1.lineNumber,
+                   aliveFlag: s1.liveFlag,
+                isYoungstock: s1.isYoungstock,
+                   breedCode: s1.breedCode,
+             lactationNumber: s1.lactationNumber,
+    estimatedLactationNumber: s1.estimatedLactationNumber,
+             managementGroup: s1.group,
+              lactationStage: s1.lactationStage,
+         previousCalvingDate: s1.lastCalvingDate,
+                   sireBreed: s1.sireBreedCode,
+                sireIdentity: s1.sireIdentity,
+            sireIdentityType: s1.sireIdentityType,
+    sireIdentityAuthenticity: s1.sireIdentityAuthenticity,
+                     dryDays: s1.dryDays,
+                   weighings: weighings,
+                    services: services,
+                    calvings: calvings,
+                 otherEvents: otherEvents,
+            lactationDetails: lactationDetails)
     }
 }

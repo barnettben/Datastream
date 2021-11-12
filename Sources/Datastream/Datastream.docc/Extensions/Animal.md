@@ -8,6 +8,6 @@
 - ``EvaluationGroup``
 - ``EvaluationSource``
 - ``IdentityType``
-- ``IdentityAuthenticity``
+- ``ItemAuthenticity``
 - ``PedigreeStatus``
 - ``LeavingReason``
