@@ -56,18 +56,8 @@ public struct AnimalStatement {
     /// The date of the last calving
     public var previousCalvingDate: Date?
     
-    /// The breed of the sire to the calf that began the current lactation
-    public var sireBreed: Int
-    
-    /// The identity of the sire to the calf that began the current lactation
-    public var sireIdentity: String
-    
-    /// The identity type of the sire to the calf that began the current lactation
-    public var sireIdentityType: IdentityType
-    
-    /// Whether the identity of sire to the calf that began the current lactation
-    /// is authentic
-    public var sireIdentityAuthenticity: ItemAuthenticity
+    /// The details of the sire to the calf that began the current lactation
+    public var sireDetails: SireDetails
     
     /// Number of days between going dry in the previous lactation
     /// and the most recent calving date
@@ -248,6 +238,21 @@ public struct LactationDetails {
     /// 2. Dividing by the number of contributors
     /// 3. Antilogging the result
     public var averageCellCount: Int
+}
+
+/// Details of a service sire
+public struct SireDetails {
+    /// The breed code of this sire
+    public var sireBreed: Int
+    
+    /// The identity of this sire
+    public var sireIdentity: String
+    
+    /// The type of identity used in ``sireIdentity``
+    public var sireIdentityType: IdentityType
+    
+    /// Whether the identity of this sire is authentic
+    public var sireIdentityAuthenticity: ItemAuthenticity
 }
 
 

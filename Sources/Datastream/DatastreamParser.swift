@@ -354,7 +354,10 @@ extension AnimalStatement {
                                      averagePencePerLitre: sx.averagePencePerLitre,
                                               seasonality: sx.seasonality,
                                          averageCellCount: sx.averageCellCount)
-        
+        let sireDetails = SireDetails(sireBreed: s1.sireBreedCode,
+                                   sireIdentity: s1.sireIdentity,
+                               sireIdentityType: s1.sireIdentityType,
+                       sireIdentityAuthenticity: s1.sireIdentityAuthenticity)
         
         self.init(lineNumber: s1.lineNumber,
                    aliveFlag: s1.liveFlag,
@@ -365,10 +368,7 @@ extension AnimalStatement {
              managementGroup: s1.group,
               lactationStage: s1.lactationStage,
          previousCalvingDate: s1.lastCalvingDate,
-                   sireBreed: s1.sireBreedCode,
-                sireIdentity: s1.sireIdentity,
-            sireIdentityType: s1.sireIdentityType,
-    sireIdentityAuthenticity: s1.sireIdentityAuthenticity,
+                 sireDetails: sireDetails,
                      dryDays: s1.dryDays,
                    weighings: weighings,
                     services: services,
