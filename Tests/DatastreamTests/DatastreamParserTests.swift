@@ -11,7 +11,7 @@ import XCTest
 final class DatastreamParserTests: XCTestCase {
     
     func testAsyncIterator() async throws {
-        let fileURL = Bundle.module.url(forResource: "SampleRecords", withExtension: "txt")!
+        let fileURL = Bundle.module.url(forResource: "DSMEMBER", withExtension: "DAT")!
         let parser = DatastreamParser(url: fileURL)
         for try await record in parser.records {
             XCTAssertNotNil(record)
@@ -19,7 +19,7 @@ final class DatastreamParserTests: XCTestCase {
     }
     
     func testStructSpecialising() async throws {
-        let fileURL = Bundle.module.url(forResource: "SampleRecords", withExtension: "txt")!
+        let fileURL = Bundle.module.url(forResource: "DSMEMBER", withExtension: "DAT")!
         let parser = DatastreamParser(url: fileURL)
         
         var iterator = parser.records.makeAsyncIterator()
@@ -32,14 +32,14 @@ final class DatastreamParserTests: XCTestCase {
     }
     
     func testParser() async {
-        let fileURL = Bundle.module.url(forResource: "SampleRecords", withExtension: "txt")!
+        let fileURL = Bundle.module.url(forResource: "DSMEMBER", withExtension: "DAT")!
         let parser = DatastreamParser(url: fileURL)
         do {
             let content = try await parser.parse()
-            XCTAssertEqual(content.recordings.count, 2)
-            XCTAssertEqual(content.animals.count, 1)
-            XCTAssertEqual(content.statements.count, 1)
-            XCTAssertEqual(content.lactations.count, 1)
+            XCTAssertEqual(content.recordings.count, 224)
+            XCTAssertEqual(content.animals.count, 503)
+            XCTAssertEqual(content.statements.count, 355)
+            XCTAssertEqual(content.lactations.count, 535)
         } catch let error as DatastreamError {
             XCTFail(error.localizedDescription)
             return
