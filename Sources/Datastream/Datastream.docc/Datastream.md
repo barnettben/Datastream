@@ -33,6 +33,7 @@ There are two primary options for parsing:
 - ``Animal``
 - ``AnimalStatement``
 - ``Lactation``
+- ``BullDetails``
 
 ### Record-Based Parsing
 

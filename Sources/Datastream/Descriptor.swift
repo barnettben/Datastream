@@ -74,17 +74,17 @@ public enum RecordDescriptor: String {
     case calvingDetails                 = "L2"
     case calvingPossibleExtraCalves     = "L3"
     case lactation305dTotals            = "L4"
-    case lactationNaturalTotals = "L5"
+    case lactationNaturalTotals         = "L5"
     
     // MARK: Sire details section
-    case bullDetails    = "B1"
-    case bullEvalGroup1 = "B2" // Argh! Eval-group number doesn't match
-    case bullEvalGroup2 = "B3" // the descriptor constant. This is correct,
-    case bullEvalGroup3 = "B4" // but ugly. Same for D section below.
-    case bullEvalGroup4 = "B5"
-    case bullEvalGroup5 = "B6"
-    case bullEvalGroup6 = "B7"
-    case bullEvalGroup7 = "B8"
+    case bullDetails = "B1"
+    case bullPTA1    = "B2" // Argh! Eval-group number doesn't match
+    case bullPTA2    = "B3" // the descriptor constant. This is correct,
+    case bullPTA3    = "B4" // but ugly. Same for D section below.
+    case bullPTA4    = "B5"
+    case bullPTA5    = "B6"
+    case bullPTA6    = "B7"
+    case bullPTA7    = "B8"
     
     // MARK: Dead dam section
     case deadDamDetails    = "D1"
@@ -237,21 +237,21 @@ extension RecordDescriptor {
         case .lactationNaturalTotals:
             return LactationTotalsRecord.self
         case .bullDetails:
-            return BaseRecord.self
-        case .bullEvalGroup1:
-            return BaseRecord.self
-        case .bullEvalGroup2:
-            return BaseRecord.self
-        case .bullEvalGroup3:
-            return BaseRecord.self
-        case .bullEvalGroup4:
-            return BaseRecord.self
-        case .bullEvalGroup5:
-            return BaseRecord.self
-        case .bullEvalGroup6:
-            return BaseRecord.self
-        case .bullEvalGroup7:
-            return BaseRecord.self
+            return BullDetailsRecord.self
+        case .bullPTA1:
+            return PTARecord.self
+        case .bullPTA2:
+            return PTARecord.self
+        case .bullPTA3:
+            return PTARecord.self
+        case .bullPTA4:
+            return PTARecord.self
+        case .bullPTA5:
+            return PTARecord.self
+        case .bullPTA6:
+            return PTARecord.self
+        case .bullPTA7:
+            return PTARecord.self
         case .deadDamDetails:
             return BaseRecord.self
         case .deadDamEvalGroup1:

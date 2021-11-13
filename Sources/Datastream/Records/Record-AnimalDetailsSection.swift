@@ -149,12 +149,18 @@ public struct PTARecord: Record {
     public var checksum: Int
     public var checksumIsValid: Bool
     public static var representableDescriptors: [RecordDescriptor] {
-        return [.animalPTA, .animalPTA2, .animalPTA3, .animalPTA4]
+        return [.animalPTA, .animalPTA2, .animalPTA3, .animalPTA4,
+                .bullPTA1,  .bullPTA2,   .bullPTA3,   .bullPTA4, .bullPTA5, .bullPTA6, .bullPTA7]
     }
 
     public var evaluationGroup: EvaluationGroup
     public var evaluationSource: EvaluationSource
-    public var evaluationDate: Date
+    
+    /// The date of the PTA evaluation
+    ///
+    /// Bulls may have a null-evaluation record with all-zero values.
+    /// In this case the date will not parse, so we make it an optional.
+    public var evaluationDate: Date?
     public var ptaMilkKG: Int
     public var ptaFatKG: Double
     public var ptaProteinKG: Double

@@ -40,6 +40,7 @@ final class DatastreamParserTests: XCTestCase {
             XCTAssertEqual(content.animals.count, 503)
             XCTAssertEqual(content.statements.count, 355)
             XCTAssertEqual(content.lactations.count, 535)
+            XCTAssertEqual(content.bulls.count, 67)
         } catch let error as DatastreamError {
             XCTFail(error.localizedDescription)
             return

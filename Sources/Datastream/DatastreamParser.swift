@@ -36,8 +36,9 @@ internal class DatastreamParser {
         let nmrNumber = try await parseNMRNumber()
         let statements = try await parseStatementsSection()
         let lactations = try await parseLactationsSection()
+        let bulls = try await parseBullsSection()
         
-        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements, lactations: lactations)
+        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements, lactations: lactations, bulls: bulls)
     }
 }
 
@@ -162,6 +163,30 @@ extension DatastreamParser {
         
         return parsedLactations
     }
+    
+    private func parseBullsSection() async throws -> [BullDetails] {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.descriptor == .bullDetails,
+                     "Iterator must start at B1 to use \(#function)")
+        
+        // Batch up records B1 - B7 then make a BullDetails from them
+        var batchedBullRecords = [Record]()
+        var parsedBulls: [BullDetails] = []
+        repeat {
+            guard let currentRecord = try await recordIterator!.next() else { break }
+            batchedBullRecords.append(currentRecord)
+            
+            let peekedItem = try await recordIterator!.peek()
+            if peekedItem?.descriptor == .bullDetails || peekedItem?.descriptor.section != .bullIdentity {
+                parsedBulls.append(try BullDetails(records: batchedBullRecords))
+                batchedBullRecords = [Record]()
+                print("batched: \(parsedBulls.count)")
+            }
+        } while try await recordIterator!.peek()?.descriptor.section == .bullIdentity
+        
+        return parsedBulls
+    }
 }
 
 
@@ -241,17 +266,7 @@ extension Animal {
                   throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Must have one each of C1 through C5. Optionally up to C8.")
               }
         
-        let evaluations = records.values.compactMap({ $0 as? PTARecord }).map({
-            return GeneticEvaluation(evaluationGroup: $0.evaluationGroup,
-                                    evaluationSource: $0.evaluationSource,
-                                      evaluationDate: $0.evaluationDate,
-                                           ptaMilkKG: $0.ptaMilkKG,
-                                            ptaFatKG: $0.ptaFatKG,
-                                        ptaProteinKG: $0.ptaProteinKG,
-                                           ptaFatPct: $0.ptaFatPct,
-                                       ptaProteinPct: $0.ptaProteinPct,
-                                         reliability: $0.reliability)
-        })
+        let evaluations = records.values.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         let dam = AnimalParent(identity: c4.damIdentity,
                            identityType: c4.damIdentityType,
                                   breed: c4.damBreed,
@@ -505,3 +520,31 @@ extension LactationProduction {
                                cellsOver200: record.cellsOver200)
     }
 }
+
+extension BullDetails {
+    fileprivate init(records: [Record]) throws {
+        guard let b1 = records.first(typed: BullDetailsRecord.self) else {
+            throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Bulls must have a B1 record.")
+        }
+        let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
+        self.init(breed: b1.breed, identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
+    }
+}
+
+extension GeneticEvaluation {
+    fileprivate init?(record: PTARecord) {
+        guard record.evaluationDate != nil else {
+            return nil
+        }
+        self.init(evaluationGroup: record.evaluationGroup,
+                 evaluationSource: record.evaluationSource,
+                   evaluationDate: record.evaluationDate!,
+                        ptaMilkKG: record.ptaMilkKG,
+                         ptaFatKG: record.ptaFatKG,
+                     ptaProteinKG: record.ptaProteinKG,
+                        ptaFatPct: record.ptaFatPct,
+                    ptaProteinPct: record.ptaProteinPct,
+                      reliability: record.reliability)
+   }
+}
+

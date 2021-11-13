@@ -15,6 +15,7 @@ public struct Datastream {
     public var nmrHerdNumber: String
     public var statements: [AnimalStatement]
     public var lactations: [Lactation]
+    public var bulls: [BullDetails]
 }
 
 extension Datastream {
