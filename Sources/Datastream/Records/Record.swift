@@ -78,6 +78,17 @@ extension Array where Array.Element == Record {
     @inlinable public func first<T: Record>(typed: T.Type) -> T? {
         return first(where: { $0 is T }) as? T
     }
+    
+    /// Returns the first record of a given type and descriptor, if present
+    ///
+    /// Useful when searching for a `Record` that can represent multiple descriptors
+    ///
+    /// - Parameter typed: A type conforming to Record to search for
+    /// - Parameter descriptor: A ``RecordDescriptor`` to search for
+    /// - Returns: A `Record` of type `T`  if present, `nil` otherwise
+    @inlinable public func first<T: Record>(typed: T.Type, withDescriptor descriptor: RecordDescriptor) -> T? {
+        return first(where: { $0 is T && $0.descriptor == descriptor }) as? T
+    }
 }
 
 

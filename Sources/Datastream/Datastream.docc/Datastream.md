@@ -32,6 +32,7 @@ There are two primary options for parsing:
 - ``HerdRecording``
 - ``Animal``
 - ``AnimalStatement``
+- ``Lactation``
 
 ### Record-Based Parsing
 
@@ -62,3 +63,7 @@ There are two primary options for parsing:
 - ``AssumedCalvingRecord``
 - ``OtherEventRecord``
 - ``LactationDetailsRecord``
+- ``CompletedLactationRecord``
+- ``CalvingDetailsRecord``
+- ``CalvingExtraCalvesRecord``
+- ``LactationTotalsRecord``

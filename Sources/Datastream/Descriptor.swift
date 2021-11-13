@@ -74,7 +74,7 @@ public enum RecordDescriptor: String {
     case calvingDetails                 = "L2"
     case calvingPossibleExtraCalves     = "L3"
     case lactation305dTotals            = "L4"
-    case lactationPossibleNaturalTotals = "L5"
+    case lactationNaturalTotals = "L5"
     
     // MARK: Sire details section
     case bullDetails    = "B1"
@@ -227,15 +227,15 @@ extension RecordDescriptor {
         case .lactationSectionLeader:
             return BaseRecord.self
         case .lactationFixedDetails:
-            return BaseRecord.self
+            return CompletedLactationRecord.self
         case .calvingDetails:
-            return BaseRecord.self
+            return CalvingDetailsRecord.self
         case .calvingPossibleExtraCalves:
-            return BaseRecord.self
+            return CalvingExtraCalvesRecord.self
         case .lactation305dTotals:
-            return BaseRecord.self
-        case .lactationPossibleNaturalTotals:
-            return BaseRecord.self
+            return LactationTotalsRecord.self
+        case .lactationNaturalTotals:
+            return LactationTotalsRecord.self
         case .bullDetails:
             return BaseRecord.self
         case .bullEvalGroup1:

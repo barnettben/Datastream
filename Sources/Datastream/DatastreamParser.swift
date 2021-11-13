@@ -35,8 +35,9 @@ internal class DatastreamParser {
         let animals = try await parseAnimalDetailsSection()
         let nmrNumber = try await parseNMRNumber()
         let statements = try await parseStatementsSection()
+        let lactations = try await parseLactationsSection()
         
-        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements)
+        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements, lactations: lactations)
     }
 }
 
@@ -136,6 +137,30 @@ extension DatastreamParser {
         } while try await recordIterator!.peek()?.descriptor.section == .statement
         
         return parsedStatements
+    }
+    
+    private func parseLactationsSection() async throws -> [Lactation] {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.descriptor == .lactationSectionLeader,
+                     "Iterator must start at L0 to use \(#function)")
+        let _ = try await recordIterator?.next() // Skip the L0 record
+        
+        // Batch up records L1 - L5 then make a Lactation from them
+        var batchedLactationRecords = [Record]()
+        var parsedLactations: [Lactation] = []
+        repeat {
+            guard let currentRecord = try await recordIterator!.next() else { break }
+            batchedLactationRecords.append(currentRecord)
+            
+            let peekedItem = try await recordIterator!.peek()
+            if peekedItem?.descriptor == .lactationFixedDetails || peekedItem?.descriptor.section != .lactation {
+                parsedLactations.append(try Lactation(records: batchedLactationRecords))
+                batchedLactationRecords = [Record]()
+            }
+        } while try await recordIterator!.peek()?.descriptor.section == .lactation
+        
+        return parsedLactations
     }
 }
 
@@ -375,5 +400,108 @@ extension AnimalStatement {
                     calvings: calvings,
                  otherEvents: otherEvents,
             lactationDetails: lactationDetails)
+    }
+}
+
+extension Lactation {
+    fileprivate init(records: [Record]) throws {
+        guard let l1 = records.first(typed: CompletedLactationRecord.self),
+              let l2 = records.first(typed: CalvingDetailsRecord.self),
+              let l4 = records.first(typed: LactationTotalsRecord.self, withDescriptor: .lactation305dTotals)
+              else {
+                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Each lactation must have at least L1, L2 and L4 records.")
+              }
+        
+        let sire = SireDetails(sireBreed: l2.sireBreed,
+                            sireIdentity: l2.sireIdentity,
+                        sireIdentityType: l2.sireIdentityType,
+                sireIdentityAuthenticity: l2.sireIdentityAuthenticity)
+        
+        // It is not guaranteed that any calves will be included
+        var calvings = [CalvingEvent]()
+        if l2.calfSex != nil {
+            let calf1 = CalvingEvent(eventDate: l2.calvingDate,
+                             eventAuthenticity: l2.calvingDateAuthenticity,
+                                     isAssumed: false,
+                                     calfBreed: l2.calfBreed,
+                                  calfIdentity: l2.calfIdentity,
+                              calfIdentityType: l2.calfIdentityType,
+                      calfIdentityAuthenticity: l2.calfIdentityAuthenticity,
+                                       calfSex: l2.calfSex!)
+            calvings.append(calf1)
+        }
+        
+        if let l3 = records.first(typed: CalvingExtraCalvesRecord.self) {
+            let calf2 = CalvingEvent(eventDate: l2.calvingDate,
+                             eventAuthenticity: l2.calvingDateAuthenticity,
+                                     isAssumed: false,
+                                     calfBreed: l3.calf2Breed,
+                                  calfIdentity: l3.calf2Identity,
+                              calfIdentityType: l3.calf2IdentityType,
+                      calfIdentityAuthenticity: l3.calf2IdentityAuthenticity,
+                                       calfSex: l3.calf2Sex!)
+            calvings.append(calf2)
+            
+            if l3.calf3Sex != nil {
+                let calf3 = CalvingEvent(eventDate: l2.calvingDate,
+                                 eventAuthenticity: l2.calvingDateAuthenticity,
+                                         isAssumed: false,
+                                         calfBreed: l3.calf3Breed,
+                                      calfIdentity: l3.calf3Identity,
+                                  calfIdentityType: l3.calf3IdentityType,
+                          calfIdentityAuthenticity: l3.calf3IdentityAuthenticity,
+                                           calfSex: l3.calf3Sex!)
+                calvings.append(calf3)
+            }
+        }
+        
+        let production305 = LactationProduction(record: l4)
+        let productionNatural = records.first(typed: LactationTotalsRecord.self, withDescriptor: .lactationNaturalTotals).map({LactationProduction(record: $0)})
+        
+        self.init(lineNumber: l1.lineNumber,
+                   aliveFlag: l1.aliveFlag,
+             lactationNumber: l1.lactationNumber,
+    estimatedLactationNumber: l1.estimatedLactationNumber,
+                   breedCode: l1.breedCode,
+             totalMaleCalves: l1.totalMaleCalves,
+           totalFemaleCalves: l1.totalFemaleCalves,
+             totalDeadCalves: l1.totalDeadCalves,
+             numberOfDryDays: l1.numberOfDryDays,
+            numberOfServices: l1.numberOfServices,
+            missedRecordings: l1.missedRecordings,
+       seasonalityAdjustment: l1.seasonalityAdjustment,
+              financialValue: l1.financialValue,
+             productionIndex: l1.productionIndex,
+              productionBase: l1.productionBase,
+           numberOfTimesLame: l1.numberOfTimesLame,
+       numberOfTimesMastitis: l1.numberOfTimesMastitis,
+           numberOfTimesSick: l1.numberOfTimesSick,
+             calvingInterval: l2.calvingInterval,
+                ageAtCalving: l2.ageAtCalving,
+                 calvingDate: l2.calvingDate,
+     calvingDateAuthenticity: l2.calvingDateAuthenticity,
+                 sireDetails: sire,
+                      calves: calvings,
+               production305: production305,
+           productionNatural: productionNatural)
+    }
+}
+
+extension LactationProduction {
+    fileprivate init(record: LactationTotalsRecord) {
+        self.init(isQualifiedForPublication: record.isQualifiedForPublication,
+                          totalAuthenticity: record.totalAuthenticity,
+                                  milkYield: record.milkYield,
+                                   fatYield: record.fatYield,
+                               proteinYield: record.proteinYield,
+                               lactoseYield: record.lactoseYield,
+                                  totalDays: record.totalDays,
+                                total3xDays: record.total3xDays,
+                                  startOf3x: record.startOf3x,
+                           lactationEndDate: record.lactationEndDate,
+                         lactationEndReason: record.lactationEndReason,
+                         numberOfRecordings: record.numberOfRecordings,
+                           averageCellCount: record.averageCellCount,
+                               cellsOver200: record.cellsOver200)
     }
 }
