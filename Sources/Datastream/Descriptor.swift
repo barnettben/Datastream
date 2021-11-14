@@ -175,7 +175,7 @@ extension RecordDescriptor {
         case .animalPTA4:
             return PTARecord.self
         case .statementSectionLeader:
-            return StatementHeaderRecord.self
+            return NMRNumberRecord.self
         case .cowIDRecord:
             return CowIDRecord.self
         case .statementNMRUse:
@@ -225,7 +225,7 @@ extension RecordDescriptor {
         case .eventSold:
             return OtherEventRecord.self
         case .lactationSectionLeader:
-            return BaseRecord.self
+            return NMRNumberRecord.self
         case .lactationFixedDetails:
             return CompletedLactationRecord.self
         case .calvingDetails:

@@ -7,12 +7,12 @@
 
 import Foundation
 
-public struct StatementHeaderRecord: Record {
+public struct NMRNumberRecord: Record {
     public var descriptor: RecordDescriptor
     public var checksum: Int
     public var checksumIsValid: Bool
     public static var representableDescriptors: [RecordDescriptor] {
-        return [.statementSectionLeader]
+        return [.statementSectionLeader, .lactationSectionLeader]
     }
 
     public var region: String

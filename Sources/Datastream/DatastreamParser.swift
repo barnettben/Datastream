@@ -30,16 +30,24 @@ internal class DatastreamParser {
         recordIterator = records.makeAsyncIterator().peekable()
         
         // These need doing in the order they appear in the datastream file
-        let herdDetails = try await parseHerdDetailsSection()
-        let recordings = try await parseHerdRecordingsSection()
-        let animals = try await parseAnimalDetailsSection()
-        let nmrNumber = try await parseNMRNumber()
-        let statements = try await parseStatementsSection()
-        let lactations = try await parseLactationsSection()
-        let bulls = try await parseBullsSection()
-        let dams = try await parseDeadDamsSection()
+        let herdDetails                   = try await parseHerdDetailsSection()
+        let recordings: [HerdRecording]   = try await parseRepeatingSection(startDescriptor: .recordingPart1)
+        let animals: [Animal]             = try await parseRepeatingSection(startDescriptor: .animalIdentity)
+        let nmrNumber                     = try await parseNMRNumber()
+        let statements: [AnimalStatement] = try await parseRepeatingSection(startDescriptor: .cowIDRecord)
+        let _                             = try await parseNMRNumber() // Lactation section leader - ignore
+        let lactations: [Lactation]       = try await parseRepeatingSection(startDescriptor: .lactationFixedDetails)
+        let bulls: [BullDetails]          = try await parseRepeatingSection(startDescriptor: .bullDetails)
+        let dams: [DeadDam]               = try await parseRepeatingSection(startDescriptor: .deadDamDetails)
         
-        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements, lactations: lactations, bulls: bulls, deadDams: dams)
+        return Datastream(herdDetails: herdDetails,
+                           recordings: recordings,
+                              animals: animals,
+                        nmrHerdNumber: nmrNumber,
+                           statements: statements,
+                           lactations: lactations,
+                                bulls: bulls,
+                             deadDams: dams)
     }
 }
 
@@ -51,125 +59,44 @@ extension DatastreamParser {
         precondition(peekedRecord?.descriptor == .nmrDetails,
                      "Iterator must start at H1 to use \(#function)")
         
-        var herdDetailsRecords: [RecordDescriptor : Record] = [:]
+        var herdDetailsRecords: [Record] = []
         repeat {
             guard let currentRecord = try await recordIterator!.next() else { break }
-            herdDetailsRecords[currentRecord.descriptor] = currentRecord
+            herdDetailsRecords.append(currentRecord)
         } while try await recordIterator!.peek()?.descriptor != .recordingPart1
         
         return try HerdDetails(records: herdDetailsRecords)
     }
     
-    private func parseHerdRecordingsSection() async throws -> [HerdRecording] {
+    /// Parses a repeating group of records into a provided type
+    ///
+    /// Many parts of the datastream file are a repeated groups of the same record.
+    /// eg. The Lactation section consists of many groups of (L1-L5). This function
+    /// collects those groups and creates an object of type `T` from them.
+    private func parseRepeatingSection<T: RecordBatchInitializable>(startDescriptor: RecordDescriptor) async throws -> [T] {
         precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
         let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.descriptor == .recordingPart1,
-                     "Iterator must start at HD to use \(#function)")
+        precondition(peekedRecord?.descriptor == startDescriptor,
+                     "Iterator must start at \(startDescriptor.rawValue) to parse into \(T.self)")
         
-        var recordingRecords = [Record]()
-        repeat {
-            guard let currentRecord = try await recordIterator!.next() else { break }
-            recordingRecords.append(currentRecord)
-        } while try await recordIterator!.peek()?.descriptor.section == .herd
-        
-        guard recordingRecords.count % 2 == 0 else {
-            throw DatastreamError(code: .malformedInput, recordContent: "Uneven recording record count")
-        }
-        return stride(from: 0, to: recordingRecords.endIndex, by: 2).map { idx -> HerdRecording in
-            let p1 = recordingRecords[idx] as! RecordingPart1
-            let p2 = recordingRecords[idx.advanced(by: 1)] as! RecordingPart2
-            return HerdRecording(part1: p1, part2: p2)
-        }
-    }
-    
-    private func parseAnimalDetailsSection() async throws -> [Animal] {
-        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
-        let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.descriptor == .animalIdentity,
-                     "Iterator must start at C1 to use \(#function)")
-        
-        // Batch up records C1 - C8 then make an animal from them
-        var parsedAnimals: [Animal] = []
-        while let batchedRecords = try await recordIterator!.collect(untilType: .animalIdentity) {
-            parsedAnimals.append(try Animal(records: batchedRecords))
+        // Batch up records then make a `T` from them
+        var parsedItems: [T] = []
+        while let batchedRecords = try await recordIterator!.collect(untilType: startDescriptor) {
+            parsedItems.append(try T(records: batchedRecords))
         }
         
-        return parsedAnimals
+        return parsedItems
     }
     
     private func parseNMRNumber() async throws -> String {
         precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
-        let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.descriptor == .statementSectionLeader,
-                     "Iterator must start at S0 to use \(#function)")
         
-        guard let s0 = try await recordIterator?.next() as? StatementHeaderRecord else {
-            throw DatastreamError(code: .malformedInput, recordContent: "Missing S0 record.")
+        guard let s0 = try await recordIterator?.next() as? NMRNumberRecord else {
+            throw DatastreamError(code: .malformedInput, recordContent: "Missing leader record S0 or L0.")
         }
         
         return s0.nmrNumber
     }
-    
-    private func parseStatementsSection() async throws -> [AnimalStatement] {
-        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
-        let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.descriptor == .cowIDRecord,
-                     "Iterator must start at S1 to use \(#function)")
-        
-        // Batch up records S1 - SX then make an animal from them
-        var parsedStatements: [AnimalStatement] = []
-        while let batchedRecords = try await recordIterator!.collect(untilType: .cowIDRecord) {
-            parsedStatements.append(try AnimalStatement(records: batchedRecords))
-        }
-        
-        return parsedStatements
-    }
-    
-    private func parseLactationsSection() async throws -> [Lactation] {
-        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
-        let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.descriptor == .lactationSectionLeader,
-                     "Iterator must start at L0 to use \(#function)")
-        let _ = try await recordIterator?.next() // Skip the L0 record
-        
-        // Batch up records L1 - L5 then make a Lactation from them
-        var parsedLactations: [Lactation] = []
-        while let batchedRecords = try await recordIterator!.collect(untilType: .lactationFixedDetails) {
-            parsedLactations.append(try Lactation(records: batchedRecords))
-        }
-        return parsedLactations
-    }
-    
-    private func parseBullsSection() async throws -> [BullDetails] {
-        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
-        let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.descriptor == .bullDetails,
-                     "Iterator must start at B1 to use \(#function)")
-        
-        // Batch up records B1 - B7 then make a BullDetails from them
-        var parsedBulls: [BullDetails] = []
-        while let batchedRecords = try await recordIterator!.collect(untilType: .bullDetails) {
-            parsedBulls.append(try BullDetails(records: batchedRecords))
-        }
-        
-        return parsedBulls
-    }
-    private func parseDeadDamsSection() async throws -> [DeadDam] {
-        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
-        let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.descriptor == .deadDamDetails,
-                     "Iterator must start at D1 to use \(#function)")
-        
-        // Batch up records D1 - D7 then make a DeadDam from them
-        var parsedDams: [DeadDam] = []
-        while let batchedRecords = try await recordIterator!.collect(untilType: .deadDamDetails) {
-            parsedDams.append(try DeadDam(records: batchedRecords))
-        }
-        
-        return parsedDams
-    }
-    
-    
 }
 
 // MARK: -
@@ -203,21 +130,21 @@ extension PeekableIterator where PeekableIterator.Element == Record {
 
 
 // MARK: -
+fileprivate protocol RecordBatchInitializable {
+    init(records: [Record]) throws
+}
+
 extension HerdDetails {
-    fileprivate init(records: [RecordDescriptor : Record]) throws {
-        precondition(records[.nmrDetails] != nil, "Missing required record \(RecordDescriptor.nmrDetails)")
-        precondition(records[.serviceIndicators] != nil, "Missing required record \(RecordDescriptor.serviceIndicators)")
-        precondition(records[.serviceIndicatorsContinued] != nil, "Missing required record \(RecordDescriptor.serviceIndicatorsContinued)")
-        
-        guard let h1 = records[.nmrDetails] as? NMRDetails,
-              let h7 = records[.serviceIndicators] as? ServiceIndicators,
-              let h8 = records[.serviceIndicatorsContinued] as? ServiceIndicatorsContinued
+    fileprivate init(records: [Record]) throws {
+        guard let h1 = records.first(typed: NMRDetails.self),
+              let h7 = records.first(typed: ServiceIndicators.self),
+              let h8 = records.first(typed: ServiceIndicatorsContinued.self)
               else {
                   throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records: H1, H7 or H8")
               }
-        let address = records.compactMap({ ($0.value as? TextRecord)?.content })
+        let address = records.compactMap({ ($0 as? TextRecord)?.content })
 
-        let internalRecords = records.filter({ $0.value.descriptor.isPrivateUse }).map({ $0.value as! BaseRecord })
+        let internalRecords = records.filter({ $0.descriptor.isPrivateUse }).map({ $0 as! BaseRecord })
         let nmrInfo = NMRInformation(nmrCounty: h1.nmrCounty,
                                      nmrOffice: h1.nmrOffice,
                                recordingScheme: h1.recordingScheme,
@@ -243,8 +170,12 @@ extension HerdDetails {
     }
 }
 
-extension HerdRecording {
-    fileprivate init(part1: RecordingPart1, part2: RecordingPart2) {
+extension HerdRecording: RecordBatchInitializable {
+    fileprivate init(records: [Record]) throws {
+        guard let part1 = records.first(typed: RecordingPart1.self),
+              let part2 = records.first(typed: RecordingPart2.self) else {
+                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Must have pairs of HD/HE records.")
+              }
         self.init(recordingDate: part1.recordingDate,
                weighingSequence: part1.weighingSequence,
                    totalAnimals: part1.totalAnimals,
@@ -266,7 +197,7 @@ extension HerdRecording {
     }
 }
 
-extension Animal {
+extension Animal: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let c1 = records.first(typed: AnimalIdentityRecord.self),
               let c2 = records.first(typed: AnimalOtherDetailsRecord.self),
@@ -313,7 +244,7 @@ extension Animal {
     }
 }
 
-extension AnimalStatement {
+extension AnimalStatement: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let s1 = records.first(typed: CowIDRecord.self),
               let sx = records.first(typed: LactationDetailsRecord.self)
@@ -429,7 +360,7 @@ extension AnimalStatement {
     }
 }
 
-extension Lactation {
+extension Lactation: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let l1 = records.first(typed: CompletedLactationRecord.self),
               let l2 = records.first(typed: CalvingDetailsRecord.self),
@@ -532,7 +463,7 @@ extension LactationProduction {
     }
 }
 
-extension BullDetails {
+extension BullDetails: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let b1 = records.first(typed: BullDetailsRecord.self) else {
             throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Bulls must have a B1 record.")
@@ -542,7 +473,7 @@ extension BullDetails {
     }
 }
 
-extension DeadDam {
+extension DeadDam: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let d1 = records.first(typed: DeadDamRecord.self) else {
             throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Dead dams must have a D1 record.")
