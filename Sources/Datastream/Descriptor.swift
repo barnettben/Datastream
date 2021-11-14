@@ -87,14 +87,14 @@ public enum RecordDescriptor: String {
     case bullPTA7    = "B8"
     
     // MARK: Dead dam section
-    case deadDamDetails    = "D1"
-    case deadDamEvalGroup1 = "D2"
-    case deadDamEvalGroup2 = "D3"
-    case deadDamEvalGroup3 = "D4"
-    case deadDamEvalGroup4 = "D5"
-    case deadDamEvalGroup5 = "D6"
-    case deadDamEvalGroup6 = "D7"
-    case deadDamEvalGroup7 = "D8"
+    case deadDamDetails = "D1"
+    case deadDamPTA1    = "D2"
+    case deadDamPTA2    = "D3"
+    case deadDamPTA3    = "D4"
+    case deadDamPTA4    = "D5"
+    case deadDamPTA5    = "D6"
+    case deadDamPTA6    = "D7"
+    case deadDamPTA7    = "D8"
     
     // MARK: Breed file & weighing calendar
     // Weighing calendar
@@ -253,20 +253,20 @@ extension RecordDescriptor {
         case .bullPTA7:
             return PTARecord.self
         case .deadDamDetails:
-            return BaseRecord.self
-        case .deadDamEvalGroup1:
-            return BaseRecord.self
-        case .deadDamEvalGroup2:
-            return BaseRecord.self
-        case .deadDamEvalGroup3:
-            return BaseRecord.self
-        case .deadDamEvalGroup4:
-            return BaseRecord.self
-        case .deadDamEvalGroup5:
-            return BaseRecord.self
-        case .deadDamEvalGroup6:
-            return BaseRecord.self
-        case .deadDamEvalGroup7:
+            return DeadDamRecord.self
+        case .deadDamPTA1:
+            return PTARecord.self
+        case .deadDamPTA2:
+            return PTARecord.self
+        case .deadDamPTA3:
+            return PTARecord.self
+        case .deadDamPTA4:
+            return PTARecord.self
+        case .deadDamPTA5:
+            return PTARecord.self
+        case .deadDamPTA6:
+            return PTARecord.self
+        case .deadDamPTA7:
             return BaseRecord.self
         case .weighCalendarLeader:
             return BaseRecord.self

@@ -37,8 +37,9 @@ internal class DatastreamParser {
         let statements = try await parseStatementsSection()
         let lactations = try await parseLactationsSection()
         let bulls = try await parseBullsSection()
+        let dams = try await parseDeadDamsSection()
         
-        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements, lactations: lactations, bulls: bulls)
+        return Datastream(herdDetails: herdDetails, recordings: recordings, animals: animals, nmrHerdNumber: nmrNumber, statements: statements, lactations: lactations, bulls: bulls, deadDams: dams)
     }
 }
 
@@ -181,11 +182,32 @@ extension DatastreamParser {
             if peekedItem?.descriptor == .bullDetails || peekedItem?.descriptor.section != .bullIdentity {
                 parsedBulls.append(try BullDetails(records: batchedBullRecords))
                 batchedBullRecords = [Record]()
-                print("batched: \(parsedBulls.count)")
             }
         } while try await recordIterator!.peek()?.descriptor.section == .bullIdentity
         
         return parsedBulls
+    }
+    private func parseDeadDamsSection() async throws -> [DeadDam] {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.descriptor == .deadDamDetails,
+                     "Iterator must start at D1 to use \(#function)")
+        
+        // Batch up records D1 - D7 then make a DeadDam from them
+        var batchedDamRecords = [Record]()
+        var parsedDams: [DeadDam] = []
+        repeat {
+            guard let currentRecord = try await recordIterator!.next() else { break }
+            batchedDamRecords.append(currentRecord)
+            
+            let peekedItem = try await recordIterator!.peek()
+            if peekedItem?.descriptor == .deadDamDetails || peekedItem?.descriptor.section != .damIdentity {
+                parsedDams.append(try DeadDam(records: batchedDamRecords))
+                batchedDamRecords = [Record]()
+            }
+        } while try await recordIterator!.peek()?.descriptor.section == .damIdentity
+        
+        return parsedDams
     }
 }
 
@@ -528,6 +550,16 @@ extension BullDetails {
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         self.init(breed: b1.breed, identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
+    }
+}
+
+extension DeadDam {
+    fileprivate init(records: [Record]) throws {
+        guard let d1 = records.first(typed: DeadDamRecord.self) else {
+            throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Dead dams must have a D1 record.")
+        }
+        let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
+        self.init(identity: d1.identity, identityType: d1.identityType, identityAuthenticity: d1.identityAuthenticity, breedCode: d1.breed, pedigreeStatus: d1.pedigreeStatus, name: d1.longName, evaluations: evaluations)
     }
 }
 

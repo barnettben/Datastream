@@ -16,6 +16,7 @@ public struct Datastream {
     public var statements: [AnimalStatement]
     public var lactations: [Lactation]
     public var bulls: [BullDetails]
+    public var deadDams: [DeadDam]
 }
 
 extension Datastream {
