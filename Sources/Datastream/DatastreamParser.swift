@@ -89,18 +89,10 @@ extension DatastreamParser {
                      "Iterator must start at C1 to use \(#function)")
         
         // Batch up records C1 - C8 then make an animal from them
-        var batchAnimalRecords: [RecordDescriptor : Record] = [:]
         var parsedAnimals: [Animal] = []
-        repeat {
-            guard let currentRecord = try await recordIterator!.next() else { break }
-            batchAnimalRecords[currentRecord.descriptor] = currentRecord
-            
-            let peekedItem = try await recordIterator!.peek()
-            if peekedItem?.descriptor == .animalIdentity || peekedItem?.descriptor.section != .animal {
-                parsedAnimals.append(try Animal(records: batchAnimalRecords))
-                batchAnimalRecords = [:]
-            }
-        } while try await recordIterator!.peek()?.descriptor.section == .animal
+        while let batchedRecords = try await recordIterator!.collect(untilType: .animalIdentity) {
+            parsedAnimals.append(try Animal(records: batchedRecords))
+        }
         
         return parsedAnimals
     }
@@ -125,18 +117,10 @@ extension DatastreamParser {
                      "Iterator must start at S1 to use \(#function)")
         
         // Batch up records S1 - SX then make an animal from them
-        var batchedStatementRecords = [Record]()
         var parsedStatements: [AnimalStatement] = []
-        repeat {
-            guard let currentRecord = try await recordIterator!.next() else { break }
-            batchedStatementRecords.append(currentRecord)
-            
-            let peekedItem = try await recordIterator!.peek()
-            if peekedItem?.descriptor == .cowIDRecord || peekedItem?.descriptor.section != .statement {
-                parsedStatements.append(try AnimalStatement(records: batchedStatementRecords))
-                batchedStatementRecords = [Record]()
-            }
-        } while try await recordIterator!.peek()?.descriptor.section == .statement
+        while let batchedRecords = try await recordIterator!.collect(untilType: .cowIDRecord) {
+            parsedStatements.append(try AnimalStatement(records: batchedRecords))
+        }
         
         return parsedStatements
     }
@@ -149,19 +133,10 @@ extension DatastreamParser {
         let _ = try await recordIterator?.next() // Skip the L0 record
         
         // Batch up records L1 - L5 then make a Lactation from them
-        var batchedLactationRecords = [Record]()
         var parsedLactations: [Lactation] = []
-        repeat {
-            guard let currentRecord = try await recordIterator!.next() else { break }
-            batchedLactationRecords.append(currentRecord)
-            
-            let peekedItem = try await recordIterator!.peek()
-            if peekedItem?.descriptor == .lactationFixedDetails || peekedItem?.descriptor.section != .lactation {
-                parsedLactations.append(try Lactation(records: batchedLactationRecords))
-                batchedLactationRecords = [Record]()
-            }
-        } while try await recordIterator!.peek()?.descriptor.section == .lactation
-        
+        while let batchedRecords = try await recordIterator!.collect(untilType: .lactationFixedDetails) {
+            parsedLactations.append(try Lactation(records: batchedRecords))
+        }
         return parsedLactations
     }
     
@@ -172,18 +147,10 @@ extension DatastreamParser {
                      "Iterator must start at B1 to use \(#function)")
         
         // Batch up records B1 - B7 then make a BullDetails from them
-        var batchedBullRecords = [Record]()
         var parsedBulls: [BullDetails] = []
-        repeat {
-            guard let currentRecord = try await recordIterator!.next() else { break }
-            batchedBullRecords.append(currentRecord)
-            
-            let peekedItem = try await recordIterator!.peek()
-            if peekedItem?.descriptor == .bullDetails || peekedItem?.descriptor.section != .bullIdentity {
-                parsedBulls.append(try BullDetails(records: batchedBullRecords))
-                batchedBullRecords = [Record]()
-            }
-        } while try await recordIterator!.peek()?.descriptor.section == .bullIdentity
+        while let batchedRecords = try await recordIterator!.collect(untilType: .bullDetails) {
+            parsedBulls.append(try BullDetails(records: batchedRecords))
+        }
         
         return parsedBulls
     }
@@ -194,20 +161,42 @@ extension DatastreamParser {
                      "Iterator must start at D1 to use \(#function)")
         
         // Batch up records D1 - D7 then make a DeadDam from them
-        var batchedDamRecords = [Record]()
         var parsedDams: [DeadDam] = []
-        repeat {
-            guard let currentRecord = try await recordIterator!.next() else { break }
-            batchedDamRecords.append(currentRecord)
-            
-            let peekedItem = try await recordIterator!.peek()
-            if peekedItem?.descriptor == .deadDamDetails || peekedItem?.descriptor.section != .damIdentity {
-                parsedDams.append(try DeadDam(records: batchedDamRecords))
-                batchedDamRecords = [Record]()
-            }
-        } while try await recordIterator!.peek()?.descriptor.section == .damIdentity
+        while let batchedRecords = try await recordIterator!.collect(untilType: .deadDamDetails) {
+            parsedDams.append(try DeadDam(records: batchedRecords))
+        }
         
         return parsedDams
+    }
+    
+    
+}
+
+// MARK: -
+extension PeekableIterator where PeekableIterator.Element == Record {
+    
+    /// Gathers records until a given type is reached or we leave a record section
+    fileprivate mutating func collect(untilType stopType: RecordDescriptor) async throws -> [Record]? {
+        
+        // Check we're not jumping out of our section immediately
+        let section = stopType.section
+        if try await peek()?.descriptor.section != section {
+            return nil
+        }
+        
+        // Batch up records until we reach our stop type
+        // or reach end of section, then break and return
+        var batchedRecords = [Record]()
+        repeat {
+            guard let currentRecord = try await next() else { break }
+            batchedRecords.append(currentRecord)
+            
+            let peekedItem = try await peek()
+            if peekedItem?.descriptor == stopType || peekedItem?.descriptor.section != section {
+                break
+            }
+        } while try await peek()?.descriptor.section == section
+        return batchedRecords
     }
 }
 
@@ -278,17 +267,17 @@ extension HerdRecording {
 }
 
 extension Animal {
-    fileprivate init(records: [RecordDescriptor : Record]) throws {
-        guard let c1 = records[.animalIdentity] as? AnimalIdentityRecord,
-              let c2 = records[.animalOtherDetails] as? AnimalOtherDetailsRecord,
-              let c3 = records[.animalName] as? AnimalNameRecord,
-              let c4 = records[.animalSireDam] as? AnimalParentsRecord,
-              let _ = records[.animalPTA] as? PTARecord
+    fileprivate init(records: [Record]) throws {
+        guard let c1 = records.first(typed: AnimalIdentityRecord.self),
+              let c2 = records.first(typed: AnimalOtherDetailsRecord.self),
+              let c3 = records.first(typed: AnimalNameRecord.self),
+              let c4 = records.first(typed: AnimalParentsRecord.self),
+              let _  = records.first(typed: PTARecord.self)
               else {
                   throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Must have one each of C1 through C5. Optionally up to C8.")
               }
         
-        let evaluations = records.values.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
+        let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         let dam = AnimalParent(identity: c4.damIdentity,
                            identityType: c4.damIdentityType,
                                   breed: c4.damBreed,
