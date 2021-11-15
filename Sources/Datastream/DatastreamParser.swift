@@ -39,6 +39,7 @@ internal class DatastreamParser {
         let lactations: [Lactation]       = try await parseRepeatingSection(startDescriptor: .lactationFixedDetails)
         let bulls: [BullDetails]          = try await parseRepeatingSection(startDescriptor: .bullDetails)
         let dams: [DeadDam]               = try await parseRepeatingSection(startDescriptor: .deadDamDetails)
+        let weighCalendar                 = try await parseWeighingCalendarSection()
         
         return Datastream(herdDetails: herdDetails,
                            recordings: recordings,
@@ -47,7 +48,8 @@ internal class DatastreamParser {
                            statements: statements,
                            lactations: lactations,
                                 bulls: bulls,
-                             deadDams: dams)
+                             deadDams: dams,
+                     weighingCalendar: weighCalendar)
     }
 }
 
@@ -96,6 +98,29 @@ extension DatastreamParser {
         }
         
         return s0.nmrNumber
+    }
+    
+    private func parseWeighingCalendarSection() async throws -> WeighingCalendar {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.descriptor == .weighCalendarLeader, "Iterator must start at W1 to use \(#function)")
+        let w1 = try await recordIterator!.next() as! WeighingCalendarLeaderRecord
+        var dates = [WeighingDate]()
+        var w2Count = 0
+        while try await recordIterator?.peek()?.descriptor == .weighCalendarQuarter {
+            let currentRecord = try await recordIterator?.next() as! WeighingQuarterRecord
+            dates.append(contentsOf: try WeighingDate.datesFromQuarter(currentRecord))
+            w2Count += 1
+        }
+        
+        let calendar = WeighingCalendar(startDate: w1.startDate, endDate: w1.endDate, weighingDates: dates)
+        
+        let w3 = try await recordIterator!.next() as! WeighingCalendarEndRecord
+        if w3.numberOfWeighQuarters != w2Count {
+            throw DatastreamError(code: .malformedInput, recordContent: "Number of W2 records (\(w2Count)) does not match W3 value (\(w3.numberOfWeighQuarters))")
+        }
+        
+        return calendar
     }
 }
 
@@ -500,3 +525,26 @@ extension GeneticEvaluation {
    }
 }
 
+extension WeighingDate {
+    fileprivate static func datesFromQuarter(_ quarter: WeighingQuarterRecord) throws -> [WeighingDate] {
+        let m1 = WeighingDate(recordingYear: quarter.year1,
+                                   sequence: quarter.sequence1,
+                              sequenceMonth: quarter.weighMonth1,
+                              calendarMonth: quarter.calendarMonth1,
+                              pmWeighingDay: quarter.pmDay1,
+                              amWeighingDay: quarter.amDay1)
+        let m2 = WeighingDate(recordingYear: quarter.year2,
+                                   sequence: quarter.sequence2,
+                              sequenceMonth: quarter.weighMonth2,
+                              calendarMonth: quarter.calendarMonth2,
+                              pmWeighingDay: quarter.pmDay2,
+                              amWeighingDay: quarter.amDay2)
+        let m3 = WeighingDate(recordingYear: quarter.year3,
+                                   sequence: quarter.sequence3,
+                              sequenceMonth: quarter.weighMonth3,
+                              calendarMonth: quarter.calendarMonth3,
+                              pmWeighingDay: quarter.pmDay3,
+                              amWeighingDay: quarter.amDay3)
+        return [m1, m2, m3]
+    }
+}

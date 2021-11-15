@@ -269,11 +269,11 @@ extension RecordDescriptor {
         case .deadDamPTA7:
             return BaseRecord.self
         case .weighCalendarLeader:
-            return BaseRecord.self
+            return WeighingCalendarLeaderRecord.self
         case .weighCalendarQuarter:
-            return BaseRecord.self
+            return WeighingQuarterRecord.self
         case .weighCalendarTrailer:
-            return BaseRecord.self
+            return WeighingCalendarEndRecord.self
         case .breedRecord1:
             return BaseRecord.self
         case .breedRecord2:
