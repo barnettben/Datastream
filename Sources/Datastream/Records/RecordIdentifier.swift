@@ -8,6 +8,15 @@
 import Foundation
 
 /// Represents the type of a given record
+///
+/// Record identifiers are two-character strings. The first character is a letter denoting
+/// the section to which the record belongs (see ``RecordSection``). The second
+/// character is a number or letter identifying the type within a section.
+///
+/// - Note: The `H` and `W` section actually consists of two subsections within one letter code.
+/// The `H` section contains both farm/NMR subscription details and a list of milk recordings.
+/// The `W` section contains both the weighing calendar and breed file. These are reference items and
+/// are not farm-specific.
 public enum RecordIdentifier: String {
     
     // MARK: Herd details
@@ -108,14 +117,20 @@ public enum RecordIdentifier: String {
     case breedRecord3 = "W6"
 }
 
-extension RecordIdentifier: CaseIterable {
-}
+extension RecordIdentifier: CaseIterable {}
 
 extension RecordIdentifier {
+    
+    /// The file section to which a record identifier belongs
     public var section: RecordSection {
         let idPrefix = String(rawValue.first!)
         return RecordSection(rawValue: idPrefix)!
     }
+    
+    /// Whether this identifier represents an NMR internal use record
+    ///
+    /// The structure of private use records is not documented in the specification, though
+    /// their existence is.
     public var isPrivateUse: Bool {
         return RecordIdentifier.privateRecordIdentifiers.contains(self)
     }
@@ -127,7 +142,7 @@ extension RecordIdentifier {
 }
 
 extension RecordIdentifier {
-    /// Provides a type for the struct which can represent the current record type
+    /// Provides a data type for a struct which can represent the current record type
     internal var recordType: Record.Type {
         switch self {
         case .nmrDetails:
@@ -286,6 +301,7 @@ extension RecordIdentifier {
 
 // MARK: -
 
+/// A section within a Datastream file
 public enum RecordSection: String {
     case herd         = "H"
     case animal       = "C"
