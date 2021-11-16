@@ -32,7 +32,7 @@ public struct RecordingPart1: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         self.recordingDate = try Field(location: 3, length: 6).extractValue(from: content)
         self.weighingSequence = try Field(location: 10, length: 2).extractValue(from: content)
@@ -87,7 +87,7 @@ public struct RecordingPart2: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         self.bulkYield = try Field(location: 3, length: 5).extractValue(from: content)
         self.bulkFatPct = try Field(location: 9, length: 4, divisor: 100).extractValue(from: content)

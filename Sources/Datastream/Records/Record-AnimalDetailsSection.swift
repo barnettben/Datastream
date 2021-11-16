@@ -35,7 +35,7 @@ public struct AnimalIdentityRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         regionNumber = try Field(location: 3, length: 2).extractValue(from: content)
         producerNumber = try Field(location: 6, length: 5).extractValue(from: content)
@@ -73,7 +73,7 @@ public struct AnimalOtherDetailsRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         alternativeBreed = try Field(location: 3, length: 2).extractValue(from: content)
         alternativeIdentity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -103,7 +103,7 @@ public struct AnimalNameRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         shortName = try Field(location: 3, length: 20).extractValue(from: content)
         longName = try Field(location: 24, length: 40).extractValue(from: content)
@@ -131,7 +131,7 @@ public struct AnimalParentsRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         sireBreed = try Field(location: 3, length: 2).extractValue(from: content)
         sireIdentity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -173,7 +173,7 @@ public struct PTARecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         evaluationGroup = try Field(location: 3, length: 2).extractValue(from: content)
         evaluationSource = try Field(location: 6, length: 2).extractValue(from: content)

@@ -26,7 +26,7 @@ public struct DeadDamRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         breed = try Field(location: 3, length: 2).extractValue(from: content)
         identity = try Field(location: 6, length: 12).extractValue(from: content)

@@ -26,7 +26,7 @@ public struct NMRNumberRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         region = try Field(location: 3, length: 2).extractValue(from: content)
         producer = try Field(location: 6, length: 5).extractValue(from: content)
@@ -62,7 +62,7 @@ public struct CowIDRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         liveFlag = try Field(location: 3, length: 1).extractValue(from: content)
         lineNumber = try Field(location: 5, length: 4).extractValue(from: content)
@@ -103,7 +103,7 @@ public struct WeighingRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         recordingDate = try Field(location: 3, length: 6).extractValue(from: content)
         resultType = try Field(location: 10, length: 1).extractValue(from: content)
@@ -136,7 +136,7 @@ public struct ServiceRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         isAuthentic = try Field(location: 10, length: 1).extractValue(from: content)
@@ -172,7 +172,7 @@ public struct ActualCalvingRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         eventAuthenticity = try Field(location: 10, length: 1).extractValue(from: content)
@@ -207,7 +207,7 @@ public struct ActualThirdCalfRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         calfBreed = try Field(location: 3, length: 2).extractValue(from: content)
         calfIdentity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -231,7 +231,7 @@ public struct AssumedCalvingRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
     }
@@ -255,7 +255,7 @@ public struct OtherEventRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         eventAuthenticity = try Field(location: 10, length: 1).extractValue(from: content)
@@ -287,7 +287,7 @@ public struct LactationDetailsRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         totalDays = try Field(location: 3, length: 4, divisor: 10).extractValue(from: content)
         totalMilk = try Field(location: 8, length: 6, divisor: 10).extractValue(from: content)

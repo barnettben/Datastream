@@ -40,7 +40,7 @@ public struct CompletedLactationRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         aliveFlag = try Field(location: 3, length: 1).extractValue(from: content)
         lineNumber = try Field(location: 5, length: 4).extractValue(from: content)
@@ -89,7 +89,7 @@ public struct CalvingDetailsRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         calvingInterval = try Field(location: 3, length: 3).extractValue(from: content)
         ageAtCalving = try Field(location: 7, length: 3).extractValue(from: content)
@@ -130,7 +130,7 @@ public struct CalvingExtraCalvesRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         calf2Breed = try Field(location: 3, length: 2).extractValue(from: content)
         calf2Identity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -172,7 +172,7 @@ public struct LactationTotalsRecord: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         isQualifiedForPublication = try Field(location: 3, length: 1).extractValue(from: content)
         totalAuthenticity = try Field(location: 5, length: 1).extractValue(from: content)

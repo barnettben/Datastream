@@ -29,7 +29,7 @@ public struct NMRDetails: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
 
         self.nmrCounty = try Field(location: 3, length: 2).extractValue(from: content)
         self.nmrOffice = try Field(location: 6, length: 2).extractValue(from: content)
@@ -73,7 +73,7 @@ public struct AddressRecord: Record {
     public init(string content: String) throws {
         descriptor = try Field.descriptorField.extractValue(from: content)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
         Self.assertCanRepresentDescriptor(descriptor)
         
         self.content = try Field(location: 3, length: 35).extractValue(from: content).trimmingCharacters(in: CharacterSet.whitespaces)
@@ -102,7 +102,7 @@ public struct ServiceIndicators: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
 
         self.county = try Field(location: 3, length: 25).extractValue(from: content)
         self.postcode = try Field(location: 29, length: 8).extractValue(from: content)
@@ -144,7 +144,7 @@ public struct ServiceIndicatorsContinued: Record {
         descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
+        checksumIsValid = Self.validateRecordStringChecksum(content)
 
         self.isHerdwatchMember = try Field(location: 3, length: 1).extractValue(from: content)
         self.cellCountMembership = try Field(location: 49, length: 1).extractValue(from: content)
