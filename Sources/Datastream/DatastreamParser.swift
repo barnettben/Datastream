@@ -167,7 +167,7 @@ extension HerdDetails {
               else {
                   throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records: H1, H7 or H8")
               }
-        let address = records.compactMap({ ($0 as? TextRecord)?.content })
+        let address = records.compactMap({ ($0 as? AddressRecord)?.content })
 
         let internalRecords = records.filter({ $0.descriptor.isPrivateUse }).map({ $0 as! BaseRecord })
         let nmrInfo = NMRInformation(nmrCounty: h1.nmrCounty,

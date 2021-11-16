@@ -133,15 +133,15 @@ extension RecordDescriptor {
         case .nmrDetails:
             return NMRDetails.self
         case .address1:
-            return TextRecord.self
+            return AddressRecord.self
         case .address2:
-            return TextRecord.self
+            return AddressRecord.self
         case .address3:
-            return TextRecord.self
+            return AddressRecord.self
         case .address4:
-            return TextRecord.self
+            return AddressRecord.self
         case .address5:
-            return TextRecord.self
+            return AddressRecord.self
         case .serviceIndicators:
             return ServiceIndicators.self
         case .serviceIndicatorsContinued:
