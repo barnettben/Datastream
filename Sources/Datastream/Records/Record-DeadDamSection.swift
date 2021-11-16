@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DeadDamRecord: Record {
+public struct DeadDamRecord: Record {
     public var descriptor: RecordDescriptor
     public var checksum: Int
     public var checksumIsValid: Bool
@@ -22,7 +22,7 @@ struct DeadDamRecord: Record {
     public var pedigreeStatus: PedigreeStatus
     public var longName: String
     
-    init(string content: String) throws {
+    public init(string content: String) throws {
         descriptor = try RecordConstants.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
         checksum = try RecordConstants.checksumField.extractValue(from: content)
