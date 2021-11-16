@@ -18,6 +18,7 @@ public struct Datastream {
     public var bulls: [BullDetails]
     public var deadDams: [DeadDam]
     public var weighingCalendar: WeighingCalendar
+    public var breeds: [Breed]
 }
 
 extension Datastream {

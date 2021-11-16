@@ -40,6 +40,7 @@ internal class DatastreamParser {
         let bulls: [BullDetails]          = try await parseRepeatingSection(startDescriptor: .bullDetails)
         let dams: [DeadDam]               = try await parseRepeatingSection(startDescriptor: .deadDamDetails)
         let weighCalendar                 = try await parseWeighingCalendarSection()
+        let breeds: [Breed]               = try await parseRepeatingSection(startDescriptor: .breedRecord1)
         
         return Datastream(herdDetails: herdDetails,
                            recordings: recordings,
@@ -49,7 +50,8 @@ internal class DatastreamParser {
                            lactations: lactations,
                                 bulls: bulls,
                              deadDams: dams,
-                     weighingCalendar: weighCalendar)
+                     weighingCalendar: weighCalendar,
+                               breeds: breeds)
     }
 }
 
@@ -505,6 +507,41 @@ extension DeadDam: RecordBatchInitializable {
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         self.init(identity: d1.identity, identityType: d1.identityType, identityAuthenticity: d1.identityAuthenticity, breedCode: d1.breed, pedigreeStatus: d1.pedigreeStatus, name: d1.longName, evaluations: evaluations)
+    }
+}
+
+extension Breed: RecordBatchInitializable {
+    fileprivate init(records: [Record]) throws {
+        guard let w4 = records.first(typed: BreedPart1Record.self),
+              let w5 = records.first(typed: BreedPart2Record.self),
+              let w6 = records.first(typed: BreedPart3Record.self) else {
+            throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Breeds must have W4, W5 and W6 records.")
+        }
+        self.init(code: w4.code,
+            equivalent: w4.equivalent,
+                  name: w4.name,
+          abbreviation: w4.abbreviation,
+       gestationPeriod: w4.gestationPeriod,
+         minDailyYield: w4.minDailyYield,
+         maxDailyYield: w4.maxDailyYield,
+          lowMilkQuery: w4.lowMilkQuery,
+         highMilkQuery: w4.highMilkQuery,
+             minFatPct: w5.minFatPct,
+             maxFatPct: w5.maxFatPct,
+           lowFatQuery: w5.lowFatQuery,
+          highFatQuery: w5.highFatQuery,
+         minProteinPct: w5.minProteinPct,
+         maxProteinPct: w5.maxProteinPct,
+       lowProteinQuery: w5.lowProteinQuery,
+      highProteinQuery: w5.highProteinQuery,
+         minLactosePct: w5.minLactosePct,
+         maxLactosePct: w5.maxLactosePct,
+       lowLactoseQuery: w5.lowLactoseQuery,
+      highLactoseQuery: w5.highLactoseQuery,
+    high305dYieldQuery: w6.high305dYieldQuery,
+ highNaturalYieldQuery: w6.highNaturalYieldQuery,
+          max305dYield: w6.max305dYield,
+       maxNaturalYield: w6.maxNaturalYield)
     }
 }
 

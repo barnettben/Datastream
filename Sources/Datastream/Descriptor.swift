@@ -275,11 +275,11 @@ extension RecordDescriptor {
         case .weighCalendarTrailer:
             return WeighingCalendarEndRecord.self
         case .breedRecord1:
-            return BaseRecord.self
+            return BreedPart1Record.self
         case .breedRecord2:
-            return BaseRecord.self
+            return BreedPart2Record.self
         case .breedRecord3:
-            return BaseRecord.self
+            return BreedPart3Record.self
         }
     }
 }
