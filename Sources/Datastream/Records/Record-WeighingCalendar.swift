@@ -31,9 +31,9 @@ public struct WeighingCalendarLeaderRecord: Record {
     }
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         startYearAndMonth = try Field(location: 3, length: 4).extractValue(from: content)
@@ -70,9 +70,9 @@ public struct WeighingQuarterRecord: Record {
     
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         year1 = try Field(location: 3, length: 2).extractValue(from: content)
@@ -108,9 +108,9 @@ public struct WeighingCalendarEndRecord: Record {
     
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         numberOfWeighQuarters = try Field(location: 3, length: 4).extractValue(from: content)

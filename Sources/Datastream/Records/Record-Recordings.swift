@@ -29,9 +29,9 @@ public struct RecordingPart1: Record {
     public var printEligible: Bool
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         self.recordingDate = try Field(location: 3, length: 6).extractValue(from: content)
@@ -84,9 +84,9 @@ public struct RecordingPart2: Record {
     public var bulkCellCount: Int
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         self.bulkYield = try Field(location: 3, length: 5).extractValue(from: content)

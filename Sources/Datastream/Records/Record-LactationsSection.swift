@@ -37,9 +37,9 @@ public struct CompletedLactationRecord: Record {
     public var numberOfTimesSick: Int
     
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         aliveFlag = try Field(location: 3, length: 1).extractValue(from: content)
@@ -86,9 +86,9 @@ public struct CalvingDetailsRecord: Record {
     public var calfSex: Sex?
     
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         calvingInterval = try Field(location: 3, length: 3).extractValue(from: content)
@@ -127,9 +127,9 @@ public struct CalvingExtraCalvesRecord: Record {
     public var calf3Sex: Sex?
     
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         calf2Breed = try Field(location: 3, length: 2).extractValue(from: content)
@@ -169,9 +169,9 @@ public struct LactationTotalsRecord: Record {
     public var cellsOver200: Int
     
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         isQualifiedForPublication = try Field(location: 3, length: 1).extractValue(from: content)

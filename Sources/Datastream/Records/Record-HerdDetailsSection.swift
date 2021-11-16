@@ -26,9 +26,9 @@ public struct NMRDetails: Record {
     public var enrolDate: Date
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
 
         self.nmrCounty = try Field(location: 3, length: 2).extractValue(from: content)
@@ -71,8 +71,8 @@ public struct AddressRecord: Record {
     public var content: String
     
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         Self.assertCanRepresentDescriptor(descriptor)
         
@@ -99,9 +99,9 @@ public struct ServiceIndicators: Record {
     public var calfCropListCycle: Int
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
 
         self.county = try Field(location: 3, length: 25).extractValue(from: content)
@@ -141,9 +141,9 @@ public struct ServiceIndicatorsContinued: Record {
     public var cellCountMembership: CellCountMembership
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
 
         self.isHerdwatchMember = try Field(location: 3, length: 1).extractValue(from: content)

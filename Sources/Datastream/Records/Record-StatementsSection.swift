@@ -23,9 +23,9 @@ public struct NMRNumberRecord: Record {
     }
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         region = try Field(location: 3, length: 2).extractValue(from: content)
@@ -59,9 +59,9 @@ public struct CowIDRecord: Record {
     
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         liveFlag = try Field(location: 3, length: 1).extractValue(from: content)
@@ -100,9 +100,9 @@ public struct WeighingRecord: Record {
     public var cellCount: Int
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         recordingDate = try Field(location: 3, length: 6).extractValue(from: content)
@@ -133,9 +133,9 @@ public struct ServiceRecord: Record {
     public var pregnancyStatus: PregnancyStatus
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
@@ -169,9 +169,9 @@ public struct ActualCalvingRecord: Record {
     public var calf2Sex: Sex?
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
@@ -204,9 +204,9 @@ public struct ActualThirdCalfRecord: Record {
     public var calfSex: Sex?
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         calfBreed = try Field(location: 3, length: 2).extractValue(from: content)
@@ -228,9 +228,9 @@ public struct AssumedCalvingRecord: Record {
     public var eventDate: Date
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
@@ -252,9 +252,9 @@ public struct OtherEventRecord: Record {
     public var eventAuthenticity: ItemAuthenticity
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
@@ -284,9 +284,9 @@ public struct LactationDetailsRecord: Record {
     public var averageCellCount: Int
 
     public init(string content: String) throws {
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         Self.assertCanRepresentDescriptor(descriptor)
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = NMRDetails.validateRecordStringChecksum(content)
         
         totalDays = try Field(location: 3, length: 4, divisor: 10).extractValue(from: content)

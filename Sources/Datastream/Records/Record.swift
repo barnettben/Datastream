@@ -44,7 +44,7 @@ extension Record {
     /// - Parameter content: A string to check for validity
     /// - Returns: `true` if valid, `false` if not
     public static func validateRecordLength(_ content: String) -> Bool {
-        return (content.lengthOfBytes(using: .ascii) == RecordConstants.recordLength)
+        return (content.lengthOfBytes(using: .ascii) == Field.recordLength)
     }
     
     /// Reports if a given record string has a valid checksum
@@ -52,9 +52,9 @@ extension Record {
     /// - Returns: `true` if valid, `false` if not
     public static func validateRecordStringChecksum(_ content: String) -> Bool {
         do {
-            let endOffset = content.index(content.endIndex, offsetBy: -RecordConstants.checksumField.length)
+            let endOffset = content.index(content.endIndex, offsetBy: -Field.checksumField.length)
             let contentToCheck = content.prefix(upTo: endOffset)
-            let expected: Int = try RecordConstants.checksumField.extractValue(from: content)
+            let expected: Int = try Field.checksumField.extractValue(from: content)
             return (expected == contentToCheck.asciiValues.map({ Int($0) }).reduce(0, +))
         } catch {
             return false
@@ -116,8 +116,8 @@ public struct BaseRecord: Record {
             throw DatastreamError(code: .invalidLength, recordContent: content)
         }
         
-        descriptor = try RecordConstants.descriptorField.extractValue(from: content)
+        descriptor = try Field.descriptorField.extractValue(from: content)
         self.content = content
-        checksum = try RecordConstants.checksumField.extractValue(from: content)
+        checksum = try Field.checksumField.extractValue(from: content)
     }
 }

@@ -43,7 +43,7 @@ struct Field {
     init(location: Int, length: Int, divisor: Int? = nil) {
         precondition(location >= 0, "Field cannot start below index 0.")
         precondition(length >= 1, "Field must have a length of at least 1.")
-        precondition(location + length <= RecordConstants.recordLength, "Field trying to access location (\(location),\(length)) beyond limit of \(RecordConstants.recordLength).")
+        precondition(location + length <= Self.recordLength, "Field trying to access location (\(location),\(length)) beyond limit of \(Self.recordLength).")
         precondition((divisor ?? 1) > 0, "Divisor must be greater than 0.")
         precondition((divisor ?? 10) % 10 == 0, "Divisor must be a multiple of 10.")
         
@@ -53,12 +53,26 @@ struct Field {
     }
 }
 
+// MARK: - Constants
+extension Field {
+    
+    /// Constant details of the descriptor field
+    static let descriptorField = Field(location: 0, length: 2)
+    
+    /// Constant details of the checksum field
+    static let checksumField = Field(location: 71, length: 5)
+    
+    /// Fixed size of a record
+    static let recordLength = 76
+}
+
+// MARK: - Value extracting
 extension Field {
     
     // Standard library types
     // ---
     func extractValue(from content: String) throws -> String {
-        assert(content.lengthOfBytes(using: .ascii) == RecordConstants.recordLength)
+        assert(content.lengthOfBytes(using: .ascii) == Self.recordLength)
         let fieldStart = content.index(content.startIndex, offsetBy: location)
         let fieldEnd = content.index(fieldStart, offsetBy: length)
         return String(content[fieldStart ..< fieldEnd])
