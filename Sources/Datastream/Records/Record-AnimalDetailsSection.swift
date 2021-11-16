@@ -8,10 +8,10 @@
 import Foundation
 
 public struct AnimalIdentityRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalIdentity]
     }
 
@@ -32,8 +32,8 @@ public struct AnimalIdentityRecord: Record {
     
 
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -52,10 +52,10 @@ public struct AnimalIdentityRecord: Record {
 }
 
 public struct AnimalOtherDetailsRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalOtherDetails]
     }
 
@@ -70,8 +70,8 @@ public struct AnimalOtherDetailsRecord: Record {
     
 
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -88,10 +88,10 @@ public struct AnimalOtherDetailsRecord: Record {
 }
 
 public struct AnimalNameRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalName]
     }
 
@@ -100,8 +100,8 @@ public struct AnimalNameRecord: Record {
     
 
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -111,10 +111,10 @@ public struct AnimalNameRecord: Record {
 }
 
 public struct AnimalParentsRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalSireDam]
     }
 
@@ -128,8 +128,8 @@ public struct AnimalParentsRecord: Record {
     public var damIdentityAuthenticity: ItemAuthenticity
     
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -145,10 +145,10 @@ public struct AnimalParentsRecord: Record {
 }
 
 public struct PTARecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalPTA, .animalPTA2, .animalPTA3, .animalPTA4,
                 .bullPTA1, .bullPTA2, .bullPTA3, .bullPTA4, .bullPTA5, .bullPTA6, .bullPTA7,
                 .deadDamPTA1, .deadDamPTA2, .deadDamPTA3, .deadDamPTA4, .deadDamPTA5, .deadDamPTA6, .deadDamPTA7]
@@ -170,8 +170,8 @@ public struct PTARecord: Record {
     public var reliability: Int
     
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         

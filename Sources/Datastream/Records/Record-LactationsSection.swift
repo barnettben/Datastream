@@ -10,10 +10,10 @@ import Foundation
 // NOTE: L0 (Lactation Section Leader) is the same as record S0
 
 public struct CompletedLactationRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.lactationFixedDetails]
     }
     
@@ -37,8 +37,8 @@ public struct CompletedLactationRecord: Record {
     public var numberOfTimesSick: Int
     
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -64,10 +64,10 @@ public struct CompletedLactationRecord: Record {
 }
 
 public struct CalvingDetailsRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.calvingDetails]
     }
     
@@ -86,8 +86,8 @@ public struct CalvingDetailsRecord: Record {
     public var calfSex: Sex?
     
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -108,10 +108,10 @@ public struct CalvingDetailsRecord: Record {
 }
 
 public struct CalvingExtraCalvesRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.calvingPossibleExtraCalves]
     }
     
@@ -127,8 +127,8 @@ public struct CalvingExtraCalvesRecord: Record {
     public var calf3Sex: Sex?
     
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -146,10 +146,10 @@ public struct CalvingExtraCalvesRecord: Record {
 }
 
 public struct LactationTotalsRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.lactation305dTotals, .lactationNaturalTotals]
     }
     
@@ -169,8 +169,8 @@ public struct LactationTotalsRecord: Record {
     public var cellsOver200: Int
     
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         

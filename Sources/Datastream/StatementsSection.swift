@@ -178,7 +178,7 @@ public struct CalvingEvent {
 /// Events other than milk recording, services and calvings
 ///
 /// Only date, authenticity and event types are stored.
-/// Event types are shown by the ``RecordDescriptor`` and may only
+/// Event types are shown by the ``RecordIdentifier`` and may only
 /// include items from `S8` to `SM`.
 public struct OtherEvent {
     
@@ -191,7 +191,7 @@ public struct OtherEvent {
     /// The type of event recorded.
     ///
     /// This may include items in the range `S8` to `SM`
-    public var eventType: RecordDescriptor
+    public var eventType: RecordIdentifier
 }
 
 public struct LactationDetails {

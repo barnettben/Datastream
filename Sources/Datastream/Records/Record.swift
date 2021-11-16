@@ -10,18 +10,18 @@ import Foundation
 
 /// The minimal properties of a datasteam record item
 ///
-/// All datastream records start with a record descriptor and end with a checksum.
+/// All datastream records start with a record type and end with a checksum.
 /// Content between these two varies between record types.
 ///
 /// See ``BaseRecord`` for a minimal `Record` implementation
 ///
 /// - Note: Records are not necessarily required to have a valid checksum
 public protocol Record {
-    var descriptor: RecordDescriptor { get }
+    var recordIdentifier: RecordIdentifier { get }
     var checksum: Int { get }
     
     var checksumIsValid: Bool { get }
-    static var representableDescriptors: [RecordDescriptor] { get }
+    static var representableIdentifiers: [RecordIdentifier] { get }
     
     init(string content: String) throws
 }
@@ -63,9 +63,9 @@ extension Record {
 }
 
 extension Record {
-    internal static func assertCanRepresentDescriptor(_ descriptor: RecordDescriptor) {
-        guard self.representableDescriptors.contains(descriptor) else {
-            fatalError("Attempting to create \(type(of: self)) with wrong record type: \(descriptor)")
+    internal static func assertCanRepresentRecordIdentifier(_ recordIdentifier: RecordIdentifier) {
+        guard self.representableIdentifiers.contains(recordIdentifier) else {
+            fatalError("Attempting to create \(type(of: self)) with wrong record type: \(recordIdentifier)")
         }
     }
 }
@@ -79,15 +79,15 @@ extension Array where Array.Element == Record {
         return first(where: { $0 is T }) as? T
     }
     
-    /// Returns the first record of a given type and descriptor, if present
+    /// Returns the first record of a given Type and RecordIdentifier, if present
     ///
-    /// Useful when searching for a `Record` that can represent multiple descriptors
+    /// Useful when searching for a `Record` that can represent multiple RecordIdentifier types
     ///
     /// - Parameter typed: A type conforming to Record to search for
-    /// - Parameter descriptor: A ``RecordDescriptor`` to search for
+    /// - Parameter recordIdentifier: A ``RecordIdentifier`` to search for
     /// - Returns: A `Record` of type `T`  if present, `nil` otherwise
-    @inlinable public func first<T: Record>(typed: T.Type, withDescriptor descriptor: RecordDescriptor) -> T? {
-        return first(where: { $0 is T && $0.descriptor == descriptor }) as? T
+    @inlinable public func first<T: Record>(typed: T.Type, identifiedBy recordIdentifier: RecordIdentifier) -> T? {
+        return first(where: { $0 is T && $0.recordIdentifier == recordIdentifier }) as? T
     }
 }
 
@@ -98,17 +98,17 @@ extension Array where Array.Element == Record {
 /// - A variable containing the string comprising this record
 /// - An initializer to build a `BaseRecord` from a string
 public struct BaseRecord: Record {
-    private(set) public var descriptor: RecordDescriptor
+    private(set) public var recordIdentifier: RecordIdentifier
     private(set) public var content: String
     private(set) public var checksum: Int
     
     public var checksumIsValid: Bool {
         let checksumString = String(format: "%05d", checksum)
-        let stringValue = "\(descriptor.rawValue),\(content),\(checksumString)"
+        let stringValue = "\(recordIdentifier.rawValue),\(content),\(checksumString)"
         return BaseRecord.validateRecordStringChecksum(stringValue)
     }
-    public static var representableDescriptors: [RecordDescriptor] {
-        return RecordDescriptor.allCases
+    public static var representableIdentifiers: [RecordIdentifier] {
+        return RecordIdentifier.allCases
     }
     
     public init(string content: String) throws {
@@ -116,7 +116,7 @@ public struct BaseRecord: Record {
             throw DatastreamError(code: .invalidLength, recordContent: content)
         }
         
-        descriptor = try Field.descriptorField.extractValue(from: content)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
         self.content = content
         checksum = try Field.checksumField.extractValue(from: content)
     }

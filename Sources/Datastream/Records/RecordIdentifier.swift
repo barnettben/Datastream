@@ -1,5 +1,5 @@
 //
-//  Descriptor.swift
+//  RecordIdentifier.swift
 //  
 //
 //  Created by Ben Barnett on 17/10/2021.
@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents the type of a given record
-public enum RecordDescriptor: String {
+public enum RecordIdentifier: String {
     
     // MARK: Herd details
     // Herd fixed records
@@ -78,9 +78,9 @@ public enum RecordDescriptor: String {
     
     // MARK: Sire details section
     case bullDetails = "B1"
-    case bullPTA1    = "B2" // Argh! Eval-group number doesn't match
-    case bullPTA2    = "B3" // the descriptor constant. This is correct,
-    case bullPTA3    = "B4" // but ugly. Same for D section below.
+    case bullPTA1    = "B2"
+    case bullPTA2    = "B3"
+    case bullPTA3    = "B4"
     case bullPTA4    = "B5"
     case bullPTA5    = "B6"
     case bullPTA6    = "B7"
@@ -108,26 +108,26 @@ public enum RecordDescriptor: String {
     case breedRecord3 = "W6"
 }
 
-extension RecordDescriptor: CaseIterable {
+extension RecordIdentifier: CaseIterable {
 }
 
-extension RecordDescriptor {
+extension RecordIdentifier {
     public var section: RecordSection {
-        let descriptorPrefix = String(rawValue.first!)
-        return RecordSection(rawValue: descriptorPrefix)!
+        let idPrefix = String(rawValue.first!)
+        return RecordSection(rawValue: idPrefix)!
     }
     public var isPrivateUse: Bool {
-        return RecordDescriptor.privateRecordDescriptors.contains(self)
+        return RecordIdentifier.privateRecordIdentifiers.contains(self)
     }
     
     /// Records types marked as being for internal use only
-    public static var privateRecordDescriptors: [RecordDescriptor] {
+    public static var privateRecordIdentifiers: [RecordIdentifier] {
         return [.header9, .headerA, .headerB, .headerC, .statementNMRUse, .statementMMBUse]
     }
 }
 
-extension RecordDescriptor {
-    /// Provides a type for the struct which can represent the current record descriptor
+extension RecordIdentifier {
+    /// Provides a type for the struct which can represent the current record type
     internal var recordType: Record.Type {
         switch self {
         case .nmrDetails:

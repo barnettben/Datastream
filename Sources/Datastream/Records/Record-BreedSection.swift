@@ -8,10 +8,10 @@
 import Foundation
 
 public struct BreedPart1Record: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.breedRecord1]
     }
 
@@ -26,8 +26,8 @@ public struct BreedPart1Record: Record {
     public var maxDailyYield: Double
 
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -44,10 +44,10 @@ public struct BreedPart1Record: Record {
 }
 
 public struct BreedPart2Record: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.breedRecord2]
     }
 
@@ -65,8 +65,8 @@ public struct BreedPart2Record: Record {
     public var maxLactosePct: Double
 
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         
@@ -86,10 +86,10 @@ public struct BreedPart2Record: Record {
 }
 
 public struct BreedPart3Record: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.breedRecord3]
     }
 
@@ -99,8 +99,8 @@ public struct BreedPart3Record: Record {
     public var maxNaturalYield: Int
 
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         

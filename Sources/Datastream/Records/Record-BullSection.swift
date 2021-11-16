@@ -8,10 +8,10 @@
 import Foundation
 
 public struct BullDetailsRecord: Record {
-    public var descriptor: RecordDescriptor
+    public var recordIdentifier: RecordIdentifier
     public var checksum: Int
     public var checksumIsValid: Bool
-    public static var representableDescriptors: [RecordDescriptor] {
+    public static var representableIdentifiers: [RecordIdentifier] {
         return [.bullDetails]
     }
     
@@ -21,8 +21,8 @@ public struct BullDetailsRecord: Record {
     public var shortName: String
     
     public init(string content: String) throws {
-        descriptor = try Field.descriptorField.extractValue(from: content)
-        Self.assertCanRepresentDescriptor(descriptor)
+        recordIdentifier = try Field.identifierField.extractValue(from: content)
+        Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         checksum = try Field.checksumField.extractValue(from: content)
         checksumIsValid = Self.validateRecordStringChecksum(content)
         

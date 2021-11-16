@@ -56,8 +56,8 @@ struct Field {
 // MARK: - Constants
 extension Field {
     
-    /// Constant details of the descriptor field
-    static let descriptorField = Field(location: 0, length: 2)
+    /// Constant details of the identifier field
+    static let identifierField = Field(location: 0, length: 2)
     
     /// Constant details of the checksum field
     static let checksumField = Field(location: 71, length: 5)

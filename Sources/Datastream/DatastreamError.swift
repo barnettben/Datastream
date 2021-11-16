@@ -27,8 +27,8 @@ public enum ErrorCode {
     /// Thrown when converting a field to the required type (eg. String -> Int) fails.
     case invalidContentType
     
-    /// Thrown when a record has a descriptor not in the specification
-    case unknownDescriptor
+    /// Thrown when a record has an identifier not in the specification
+    case unknownIdentifier
     
     /// A catch-all error for problems that don't merit a more specific description
     case malformedInput

@@ -67,10 +67,10 @@ public struct AsyncRecordSequence: AsyncSequence {
             guard let line = try await lineIterator.next(), line.isEmpty == false else {
                 return nil
             }
-            guard let descriptor = RecordDescriptor(rawValue: String(line.prefix(2))) else {
-                throw DatastreamError(code: .unknownDescriptor, recordContent: line)
+            guard let recordIdentifier = RecordIdentifier(rawValue: String(line.prefix(2))) else {
+                throw DatastreamError(code: .unknownIdentifier, recordContent: line)
             }
-            let record = try descriptor.recordType.init(string: line)
+            let record = try recordIdentifier.recordType.init(string: line)
             return record
         }
     }
