@@ -1,0 +1,7 @@
+H1,69,01,15,14,11,00,00,00,00,00,89000,01,FOR DEMO USE ONLY   ,880201,,00001
+H2,NMR LIVESTOCK MANAGEMENT LTD       ,                               ,034567
+H3,8 Shavington Park                  ,                             ,03398
+
+// H1 has incorrect checksum
+// H2 has too many characters
+// H2 has too few characters

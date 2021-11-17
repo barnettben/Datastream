@@ -8,13 +8,19 @@
 import Foundation
 
 
-/// The `AsyncRecordSequence` produces instances of the `Record` protocol
+/// `AsyncRecordSequence` produces instances of the `Record` protocol
 /// from a datastream file.
 public struct AsyncRecordSequence: AsyncSequence {
     
     public typealias Element = Record
     private var fileURL: URL
     
+    /// Whether record size and checksums should be validated during parsing
+    ///
+    /// This is rarely necessary and off by default.
+    public var validateRecords: Bool = false
+    
+    /// Initializes a new async sequence from a URL
     public init(url: URL) {
         self.fileURL = url
     }
@@ -28,9 +34,13 @@ public struct AsyncRecordSequence: AsyncSequence {
         private var fileURL: URL
         private var lineIterator: AsyncLineSequence<URL.AsyncBytes>.AsyncIterator
         
-        public init(fileURL: URL) {
+        /// Whether record size and checksums should be validated during parsing
+        public var validateRecords: Bool = false
+        
+        public init(fileURL: URL, validatesRecords: Bool = false) {
             self.fileURL = fileURL
             self.lineIterator = fileURL.lines.makeAsyncIterator()
+            self.validateRecords = validatesRecords
         }
         
         /// Asynchronously advances to the next element and returns it, or ends the
@@ -46,7 +56,12 @@ public struct AsyncRecordSequence: AsyncSequence {
             guard let recordIdentifier = RecordIdentifier(rawValue: String(line.prefix(2))) else {
                 throw DatastreamError(code: .unknownIdentifier, recordContent: line)
             }
-            let record = try recordIdentifier.recordType.init(string: line)
+            let record: Record
+            if validateRecords == true {
+                record = try recordIdentifier.recordType.init(validatingString: line)
+            } else {
+                record = try recordIdentifier.recordType.init(string: line)
+            }
             return record
         }
     }
@@ -54,10 +69,12 @@ public struct AsyncRecordSequence: AsyncSequence {
     /// Creates the asynchronous iterator that produces elements of this
     /// asynchronous sequence.
     ///
+    /// - Parameter fileURL: A URL pointing to a Datastream file
+    /// - Parameter validatesRecords: `true` if record size and checksums should be validated during parsing. `false` by default.
     /// - Returns: An instance of the `AsyncIterator` type used to produce
     /// elements of the asynchronous sequence.
     public func makeAsyncIterator() -> AsyncRecordIterator {
-        return AsyncRecordIterator(fileURL: fileURL)
+        return AsyncRecordIterator(fileURL: fileURL, validatesRecords: validateRecords)
     }
     
     /// The type of asynchronous iterator that produces elements of this

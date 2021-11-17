@@ -31,7 +31,10 @@ extension Record {
     /// See ``recordChecksumIsValid(_:)`` for details of how this is calculated.
     ///
     public init(validatingString content: String) throws {
-        guard Self.recordStringIsValid(content) == true else {
+        guard Self.recordLengthIsValid(content) == true else {
+            throw DatastreamError(code: .invalidLength, recordContent: content)
+        }
+        guard Self.recordChecksumIsValid(content) == true else {
             throw DatastreamError(code: .invalidChecksum, recordContent: content)
         }
         try self.init(string: content)

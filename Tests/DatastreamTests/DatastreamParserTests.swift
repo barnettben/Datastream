@@ -10,14 +10,6 @@ import XCTest
 
 final class DatastreamParserTests: XCTestCase {
     
-    func testAsyncIterator() async throws {
-        let fileURL = Bundle.module.url(forResource: "DSMEMBER", withExtension: "DAT")!
-        let parser = DatastreamParser(url: fileURL)
-        for try await record in parser.records {
-            XCTAssertNotNil(record)
-        }
-    }
-    
     func testStructSpecialising() async throws {
         let fileURL = Bundle.module.url(forResource: "DSMEMBER", withExtension: "DAT")!
         let parser = DatastreamParser(url: fileURL)

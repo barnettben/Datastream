@@ -32,6 +32,8 @@ for try await record in statementSequence {
 }
 ```
 
+> Tip: While it is possible to validate record sizes and checksums during parsing, it is not recommended. Real-world files and some demonstration data files contain invalid checksums. It does not appear to adversely affect the rest of the file.
+
 
 ## Topics
 
