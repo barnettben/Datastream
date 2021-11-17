@@ -162,13 +162,13 @@ extension RecordIdentifier {
         case .serviceIndicatorsContinued:
             return ServiceIndicatorsContinued.self
         case .header9:
-            return BaseRecord.self
+            return SomeRecord.self
         case .headerA:
-            return BaseRecord.self
+            return SomeRecord.self
         case .headerB:
-            return BaseRecord.self
+            return SomeRecord.self
         case .headerC:
-            return BaseRecord.self
+            return SomeRecord.self
         case .recordingPart1:
             return RecordingPart1.self
         case .recordingPart2:
@@ -194,11 +194,11 @@ extension RecordIdentifier {
         case .cowIDRecord:
             return CowIDRecord.self
         case .statementNMRUse:
-            return BaseRecord.self
+            return SomeRecord.self
         case .currentLactationTotals:
             return LactationDetailsRecord.self
         case .statementMMBUse:
-            return BaseRecord.self
+            return SomeRecord.self
         case .eventWeighing:
             return WeighingRecord.self
         case .eventService:
@@ -282,7 +282,7 @@ extension RecordIdentifier {
         case .deadDamPTA6:
             return PTARecord.self
         case .deadDamPTA7:
-            return BaseRecord.self
+            return SomeRecord.self
         case .weighCalendarLeader:
             return WeighingCalendarLeaderRecord.self
         case .weighCalendarQuarter:

@@ -33,7 +33,7 @@ public struct NMRInformation {
     public var calfCropListCycle: Int
     public var isHerdwatch: Bool
     public var cellCountMembership: CellCountMembership
-    public var internalHerdRecords: [BaseRecord]
+    public var internalHerdRecords: [SomeRecord]
 }
 
 public struct HerdRecording {

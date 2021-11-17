@@ -171,7 +171,7 @@ extension HerdDetails {
               }
         let address = records.compactMap({ ($0 as? AddressRecord)?.content })
 
-        let internalRecords = records.filter({ $0.recordIdentifier.isPrivateUse }).map({ $0 as! BaseRecord })
+        let internalRecords = records.filter({ $0.recordIdentifier.isPrivateUse }).map({ $0 as! SomeRecord })
         let nmrInfo = NMRInformation(nmrCounty: h1.nmrCounty,
                                      nmrOffice: h1.nmrOffice,
                                recordingScheme: h1.recordingScheme,

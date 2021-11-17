@@ -114,30 +114,21 @@ extension Array where Array.Element == Record {
 
 /// A basic implementation of a datasteam record item
 ///
-/// Implements `Record`. It also provides:
-/// - A variable containing the string comprising this record
-/// - An initializer to build a `BaseRecord` from a string
-public struct BaseRecord: Record {
-    private(set) public var recordIdentifier: RecordIdentifier
-    private(set) public var content: String
-    private(set) public var checksum: Int
-    
-    public var checksumIsValid: Bool {
-        let checksumString = String(format: "%05d", checksum)
-        let stringValue = "\(recordIdentifier.rawValue),\(content),\(checksumString)"
-        return BaseRecord.recordChecksumIsValid(stringValue)
-    }
+/// Implements `Record` and provides a `String` value of it's content.
+/// Used for undocumented or unknown record types.
+public struct SomeRecord: Record {
+    public var recordIdentifier: RecordIdentifier
+    public var content: String
     public static var representableIdentifiers: [RecordIdentifier] {
         return RecordIdentifier.allCases
     }
     
     public init(string content: String) throws {
-        guard BaseRecord.recordLengthIsValid(content) else {
+        guard SomeRecord.recordLengthIsValid(content) else {
             throw DatastreamError(code: .invalidLength, recordContent: content)
         }
         
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         self.content = content
-        checksum = try Field.checksumField.extractValue(from: content)
     }
 }

@@ -28,31 +28,31 @@ final class RecordTests: XCTestCase {
     
     func testChecksumValidationOK() throws {
         for recordString in RecordTests.goodRecordStrings {
-            XCTAssertTrue(BaseRecord.recordChecksumIsValid(recordString))
+            XCTAssertTrue(SomeRecord.recordChecksumIsValid(recordString))
         }
     }
     func testChecksumValidationFail() throws {
         for recordString in RecordTests.invalidChecksumRecordStrings {
-            XCTAssertFalse(BaseRecord.recordChecksumIsValid(recordString))
+            XCTAssertFalse(SomeRecord.recordChecksumIsValid(recordString))
         }
     }
     func testRecordLengthValidation() throws {
         for recordString in RecordTests.goodRecordStrings {
-            XCTAssertTrue(BaseRecord.recordLengthIsValid(recordString))
+            XCTAssertTrue(SomeRecord.recordLengthIsValid(recordString))
         }
         for recordString in RecordTests.invalidLengthRecordStrings {
-            XCTAssertFalse(BaseRecord.recordLengthIsValid(recordString))
+            XCTAssertFalse(SomeRecord.recordLengthIsValid(recordString))
         }
     }
     
-    func testBaseRecordCreationOK() throws {
+    func testSomeRecordCreationOK() throws {
         for recordString in RecordTests.goodRecordStrings {
-            XCTAssertNoThrow(try BaseRecord(string: recordString))
+            XCTAssertNoThrow(try SomeRecord(string: recordString))
         }
     }
-    func testBaseRecordCreationFails() throws {
+    func testSomeRecordCreationFails() throws {
         for recordString in RecordTests.invalidLengthRecordStrings {
-            XCTAssertThrowsError(try BaseRecord(string: recordString))
+            XCTAssertThrowsError(try SomeRecord(string: recordString))
         }
     }
     
