@@ -9,8 +9,6 @@ import Foundation
 
 public struct NMRDetails: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.nmrDetails]
     }
@@ -28,8 +26,6 @@ public struct NMRDetails: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
 
         self.nmrCounty = try Field(location: 3, length: 2).extractValue(from: content)
         self.nmrOffice = try Field(location: 6, length: 2).extractValue(from: content)
@@ -62,8 +58,6 @@ public enum RecordingScheme: Int {
 
 public struct AddressRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.address1, .address2, .address3, .address4, .address5]
     }
@@ -72,8 +66,6 @@ public struct AddressRecord: Record {
     
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
         self.content = try Field(location: 3, length: 35).extractValue(from: content).trimmingCharacters(in: CharacterSet.whitespaces)
@@ -84,8 +76,6 @@ public struct AddressRecord: Record {
 
 public struct ServiceIndicators: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.serviceIndicators]
     }
@@ -101,8 +91,6 @@ public struct ServiceIndicators: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
 
         self.county = try Field(location: 3, length: 25).extractValue(from: content)
         self.postcode = try Field(location: 29, length: 8).extractValue(from: content)
@@ -131,8 +119,6 @@ public enum CowCardPrinting: Int {
 
 public struct ServiceIndicatorsContinued: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.serviceIndicatorsContinued]
     }
@@ -143,8 +129,6 @@ public struct ServiceIndicatorsContinued: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
 
         self.isHerdwatchMember = try Field(location: 3, length: 1).extractValue(from: content)
         self.cellCountMembership = try Field(location: 49, length: 1).extractValue(from: content)

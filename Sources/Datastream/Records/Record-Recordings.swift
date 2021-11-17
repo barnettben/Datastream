@@ -9,8 +9,6 @@ import Foundation
 
 public struct RecordingPart1: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.recordingPart1]
     }
@@ -31,8 +29,6 @@ public struct RecordingPart1: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         self.recordingDate = try Field(location: 3, length: 6).extractValue(from: content)
         self.weighingSequence = try Field(location: 10, length: 2).extractValue(from: content)
@@ -70,8 +66,6 @@ public enum DifferenceCode: Int {
 
 public struct RecordingPart2: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.recordingPart2]
     }
@@ -86,8 +80,6 @@ public struct RecordingPart2: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         self.bulkYield = try Field(location: 3, length: 5).extractValue(from: content)
         self.bulkFatPct = try Field(location: 9, length: 4, divisor: 100).extractValue(from: content)

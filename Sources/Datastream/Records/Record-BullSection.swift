@@ -9,8 +9,6 @@ import Foundation
 
 public struct BullDetailsRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.bullDetails]
     }
@@ -23,8 +21,6 @@ public struct BullDetailsRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         breed = try Field(location: 3, length: 2).extractValue(from: content)
         identity = try Field(location: 6, length: 12).extractValue(from: content)

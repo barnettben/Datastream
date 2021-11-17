@@ -9,8 +9,6 @@ import Foundation
 
 public struct AnimalIdentityRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalIdentity]
     }
@@ -34,8 +32,6 @@ public struct AnimalIdentityRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         regionNumber = try Field(location: 3, length: 2).extractValue(from: content)
         producerNumber = try Field(location: 6, length: 5).extractValue(from: content)
@@ -53,8 +49,6 @@ public struct AnimalIdentityRecord: Record {
 
 public struct AnimalOtherDetailsRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalOtherDetails]
     }
@@ -72,8 +66,6 @@ public struct AnimalOtherDetailsRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         alternativeBreed = try Field(location: 3, length: 2).extractValue(from: content)
         alternativeIdentity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -89,8 +81,6 @@ public struct AnimalOtherDetailsRecord: Record {
 
 public struct AnimalNameRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalName]
     }
@@ -102,8 +92,6 @@ public struct AnimalNameRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         shortName = try Field(location: 3, length: 20).extractValue(from: content)
         longName = try Field(location: 24, length: 40).extractValue(from: content)
@@ -112,8 +100,6 @@ public struct AnimalNameRecord: Record {
 
 public struct AnimalParentsRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalSireDam]
     }
@@ -130,8 +116,6 @@ public struct AnimalParentsRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         sireBreed = try Field(location: 3, length: 2).extractValue(from: content)
         sireIdentity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -146,8 +130,6 @@ public struct AnimalParentsRecord: Record {
 
 public struct PTARecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.animalPTA, .animalPTA2, .animalPTA3, .animalPTA4,
                 .bullPTA1, .bullPTA2, .bullPTA3, .bullPTA4, .bullPTA5, .bullPTA6, .bullPTA7,
@@ -172,8 +154,6 @@ public struct PTARecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         evaluationGroup = try Field(location: 3, length: 2).extractValue(from: content)
         evaluationSource = try Field(location: 6, length: 2).extractValue(from: content)

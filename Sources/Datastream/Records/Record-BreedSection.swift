@@ -9,8 +9,6 @@ import Foundation
 
 public struct BreedPart1Record: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.breedRecord1]
     }
@@ -28,8 +26,6 @@ public struct BreedPart1Record: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         code = try Field(location: 3, length: 2).extractValue(from: content)
         equivalent = try Field(location: 6, length: 2).extractValue(from: content)
@@ -45,8 +41,6 @@ public struct BreedPart1Record: Record {
 
 public struct BreedPart2Record: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.breedRecord2]
     }
@@ -67,8 +61,6 @@ public struct BreedPart2Record: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         minFatPct = try Field(location: 3, length: 4, divisor: 100).extractValue(from: content)
         lowFatQuery = try Field(location: 8, length: 4, divisor: 100).extractValue(from: content)
@@ -87,8 +79,6 @@ public struct BreedPart2Record: Record {
 
 public struct BreedPart3Record: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.breedRecord3]
     }
@@ -101,8 +91,6 @@ public struct BreedPart3Record: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         high305dYieldQuery = try Field(location: 3, length: 5).extractValue(from: content)
         max305dYield = try Field(location: 9, length: 5).extractValue(from: content)

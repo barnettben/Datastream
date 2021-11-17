@@ -9,8 +9,6 @@ import Foundation
 
 public struct NMRNumberRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.statementSectionLeader, .lactationSectionLeader]
     }
@@ -25,8 +23,6 @@ public struct NMRNumberRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         region = try Field(location: 3, length: 2).extractValue(from: content)
         producer = try Field(location: 6, length: 5).extractValue(from: content)
@@ -36,8 +32,6 @@ public struct NMRNumberRecord: Record {
 
 public struct CowIDRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.cowIDRecord]
     }
@@ -61,8 +55,6 @@ public struct CowIDRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         liveFlag = try Field(location: 3, length: 1).extractValue(from: content)
         lineNumber = try Field(location: 5, length: 4).extractValue(from: content)
@@ -83,8 +75,6 @@ public struct CowIDRecord: Record {
 
 public struct WeighingRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.eventWeighing]
     }
@@ -102,8 +92,6 @@ public struct WeighingRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         recordingDate = try Field(location: 3, length: 6).extractValue(from: content)
         resultType = try Field(location: 10, length: 1).extractValue(from: content)
@@ -119,8 +107,6 @@ public struct WeighingRecord: Record {
 
 public struct ServiceRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.eventService]
     }
@@ -135,8 +121,6 @@ public struct ServiceRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         isAuthentic = try Field(location: 10, length: 1).extractValue(from: content)
@@ -149,8 +133,6 @@ public struct ServiceRecord: Record {
 
 public struct ActualCalvingRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.eventActualCalving]
     }
@@ -171,8 +153,6 @@ public struct ActualCalvingRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         eventAuthenticity = try Field(location: 10, length: 1).extractValue(from: content)
@@ -191,8 +171,6 @@ public struct ActualCalvingRecord: Record {
 
 public struct ActualThirdCalfRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.eventActualCalving]
     }
@@ -206,8 +184,6 @@ public struct ActualThirdCalfRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         calfBreed = try Field(location: 3, length: 2).extractValue(from: content)
         calfIdentity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -219,8 +195,6 @@ public struct ActualThirdCalfRecord: Record {
 
 public struct AssumedCalvingRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.eventAssumedCalving]
     }
@@ -230,8 +204,6 @@ public struct AssumedCalvingRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
     }
@@ -239,8 +211,6 @@ public struct AssumedCalvingRecord: Record {
 
 public struct OtherEventRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.eventNoSample, .eventAssumed1x,      .event1x,     .eventAssumedDry,
                 .eventDry,      .eventSuckling,       .eventAbsent, .eventBarren,
@@ -254,8 +224,6 @@ public struct OtherEventRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         eventAuthenticity = try Field(location: 10, length: 1).extractValue(from: content)
@@ -264,8 +232,6 @@ public struct OtherEventRecord: Record {
 
 public struct LactationDetailsRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.currentLactationTotals]
     }
@@ -286,8 +252,6 @@ public struct LactationDetailsRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         totalDays = try Field(location: 3, length: 4, divisor: 10).extractValue(from: content)
         totalMilk = try Field(location: 8, length: 6, divisor: 10).extractValue(from: content)

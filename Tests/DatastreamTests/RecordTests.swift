@@ -28,20 +28,20 @@ final class RecordTests: XCTestCase {
     
     func testChecksumValidationOK() throws {
         for recordString in RecordTests.goodRecordStrings {
-            XCTAssertTrue(BaseRecord.validateRecordStringChecksum(recordString))
+            XCTAssertTrue(BaseRecord.recordChecksumIsValid(recordString))
         }
     }
     func testChecksumValidationFail() throws {
         for recordString in RecordTests.invalidChecksumRecordStrings {
-            XCTAssertFalse(BaseRecord.validateRecordStringChecksum(recordString))
+            XCTAssertFalse(BaseRecord.recordChecksumIsValid(recordString))
         }
     }
     func testRecordLengthValidation() throws {
         for recordString in RecordTests.goodRecordStrings {
-            XCTAssertTrue(BaseRecord.validateRecordLength(recordString))
+            XCTAssertTrue(BaseRecord.recordLengthIsValid(recordString))
         }
         for recordString in RecordTests.invalidLengthRecordStrings {
-            XCTAssertFalse(BaseRecord.validateRecordLength(recordString))
+            XCTAssertFalse(BaseRecord.recordLengthIsValid(recordString))
         }
     }
     
@@ -61,6 +61,5 @@ final class RecordTests: XCTestCase {
         let record = try NMRDetails(string: content)
         XCTAssertEqual(record.recordIdentifier, .nmrDetails)
         XCTAssertEqual(record.nationalHerdMark, "89000")
-        XCTAssertEqual(record.checksum, 3750)
     }
 }

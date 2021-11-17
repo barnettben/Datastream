@@ -9,8 +9,6 @@ import Foundation
 
 public struct WeighingCalendarLeaderRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.weighCalendarLeader]
     }
@@ -33,8 +31,6 @@ public struct WeighingCalendarLeaderRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         startYearAndMonth = try Field(location: 3, length: 4).extractValue(from: content)
         endYearAndMonth = try Field(location: 8, length: 4).extractValue(from: content)
@@ -43,8 +39,6 @@ public struct WeighingCalendarLeaderRecord: Record {
 
 public struct WeighingQuarterRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.weighCalendarQuarter]
     }
@@ -72,8 +66,6 @@ public struct WeighingQuarterRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         year1 = try Field(location: 3, length: 2).extractValue(from: content)
         sequence1 = try Field(location: 6, length: 2).extractValue(from: content)
@@ -98,8 +90,6 @@ public struct WeighingQuarterRecord: Record {
 
 public struct WeighingCalendarEndRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.weighCalendarTrailer]
     }
@@ -110,8 +100,6 @@ public struct WeighingCalendarEndRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         numberOfWeighQuarters = try Field(location: 3, length: 4).extractValue(from: content)
     }

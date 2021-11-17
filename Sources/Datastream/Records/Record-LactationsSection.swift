@@ -11,8 +11,6 @@ import Foundation
 
 public struct CompletedLactationRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.lactationFixedDetails]
     }
@@ -39,8 +37,6 @@ public struct CompletedLactationRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         aliveFlag = try Field(location: 3, length: 1).extractValue(from: content)
         lineNumber = try Field(location: 5, length: 4).extractValue(from: content)
@@ -65,8 +61,6 @@ public struct CompletedLactationRecord: Record {
 
 public struct CalvingDetailsRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.calvingDetails]
     }
@@ -88,8 +82,6 @@ public struct CalvingDetailsRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         calvingInterval = try Field(location: 3, length: 3).extractValue(from: content)
         ageAtCalving = try Field(location: 7, length: 3).extractValue(from: content)
@@ -109,8 +101,6 @@ public struct CalvingDetailsRecord: Record {
 
 public struct CalvingExtraCalvesRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.calvingPossibleExtraCalves]
     }
@@ -129,8 +119,6 @@ public struct CalvingExtraCalvesRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         calf2Breed = try Field(location: 3, length: 2).extractValue(from: content)
         calf2Identity = try Field(location: 6, length: 12).extractValue(from: content)
@@ -147,8 +135,6 @@ public struct CalvingExtraCalvesRecord: Record {
 
 public struct LactationTotalsRecord: Record {
     public var recordIdentifier: RecordIdentifier
-    public var checksum: Int
-    public var checksumIsValid: Bool
     public static var representableIdentifiers: [RecordIdentifier] {
         return [.lactation305dTotals, .lactationNaturalTotals]
     }
@@ -171,8 +157,6 @@ public struct LactationTotalsRecord: Record {
     public init(string content: String) throws {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
-        checksum = try Field.checksumField.extractValue(from: content)
-        checksumIsValid = Self.validateRecordStringChecksum(content)
         
         isQualifiedForPublication = try Field(location: 3, length: 1).extractValue(from: content)
         totalAuthenticity = try Field(location: 5, length: 1).extractValue(from: content)

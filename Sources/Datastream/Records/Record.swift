@@ -13,29 +13,41 @@ import Foundation
 /// All datastream records start with a record type and end with a checksum.
 /// Content between these two varies between record types.
 ///
+/// We do not include the checksum as a property on `Record` types as it is only relevant to this library
+/// during the reading of a Datastream file.
+///
 /// See ``BaseRecord`` for a minimal `Record` implementation
 ///
 /// - Note: Records are not necessarily required to have a valid checksum
 public protocol Record {
     var recordIdentifier: RecordIdentifier { get }
-    var checksum: Int { get }
-    
-    var checksumIsValid: Bool { get }
     static var representableIdentifiers: [RecordIdentifier] { get }
     
     init(string content: String) throws
 }
 
-
+// MARK: - Validating
 extension Record {
+    
+    /// Initializes a type conforming to `Record` if it is considered valid
+    ///
+    /// A record is considered valid if it is 76 ascii characters long and has a valid checksum.
+    /// See ``recordChecksumIsValid(_:)`` for details of how this is calculated.
+    ///
+    public init(validatingString content: String) throws {
+        guard Self.recordStringIsValid(content) == true else {
+            throw DatastreamError(code: .invalidChecksum, recordContent: content)
+        }
+        try self.init(string: content)
+    }
     
     /// Reports if a given string matches the specification of a record
     ///
     /// It must be 76 ascii characters long and have a valid checksum
     /// - Parameter content: A string to check for validity
     /// - Returns: `true` if valid, `false` if not
-    public static func validateRecordString(_ content: String) -> Bool {
-        return validateRecordLength(content) && validateRecordStringChecksum(content)
+    public static func recordStringIsValid(_ content: String) -> Bool {
+        return recordLengthIsValid(content) && recordChecksumIsValid(content)
     }
     
     /// Reports if a given string is the correct length to be a record
@@ -43,14 +55,20 @@ extension Record {
     /// It must be 76 ascii characters long
     /// - Parameter content: A string to check for validity
     /// - Returns: `true` if valid, `false` if not
-    public static func validateRecordLength(_ content: String) -> Bool {
+    public static func recordLengthIsValid(_ content: String) -> Bool {
         return (content.lengthOfBytes(using: .ascii) == Field.recordLength)
     }
     
     /// Reports if a given record string has a valid checksum
+    ///
+    /// The checksum is located in the last five characters of a record and is zero-padded (eg `01234`).
+    ///
+    /// It is calculated by summing the decimal ascii values of all characters in the record except for the
+    /// last five used in the checksum itself. It is only relevant when reading or writing a file.
+    ///
     /// - Parameter content: A record string to validate for checksum correctness
     /// - Returns: `true` if valid, `false` if not
-    public static func validateRecordStringChecksum(_ content: String) -> Bool {
+    public static func recordChecksumIsValid(_ content: String) -> Bool {
         do {
             let endOffset = content.index(content.endIndex, offsetBy: -Field.checksumField.length)
             let contentToCheck = content.prefix(upTo: endOffset)
@@ -70,6 +88,7 @@ extension Record {
     }
 }
 
+// MARK: -
 extension Array where Array.Element == Record {
     /// Returns the first record of a given type, if present
     ///
@@ -91,6 +110,7 @@ extension Array where Array.Element == Record {
     }
 }
 
+// MARK: -
 
 /// A basic implementation of a datasteam record item
 ///
@@ -105,14 +125,14 @@ public struct BaseRecord: Record {
     public var checksumIsValid: Bool {
         let checksumString = String(format: "%05d", checksum)
         let stringValue = "\(recordIdentifier.rawValue),\(content),\(checksumString)"
-        return BaseRecord.validateRecordStringChecksum(stringValue)
+        return BaseRecord.recordChecksumIsValid(stringValue)
     }
     public static var representableIdentifiers: [RecordIdentifier] {
         return RecordIdentifier.allCases
     }
     
     public init(string content: String) throws {
-        guard BaseRecord.validateRecordLength(content) else {
+        guard BaseRecord.recordLengthIsValid(content) else {
             throw DatastreamError(code: .invalidLength, recordContent: content)
         }
         
