@@ -1,4 +1,4 @@
-# ``Datastream/RecordDescriptor``
+# ``Datastream/RecordIdentifier``
 
 ## Topics
 

@@ -15,10 +15,6 @@ import Foundation
 ///
 /// We do not include the checksum as a property on `Record` types as it is only relevant to this library
 /// during the reading of a Datastream file.
-///
-/// See ``BaseRecord`` for a minimal `Record` implementation
-///
-/// - Note: Records are not necessarily required to have a valid checksum
 public protocol Record {
     var recordIdentifier: RecordIdentifier { get }
     static var representableIdentifiers: [RecordIdentifier] { get }

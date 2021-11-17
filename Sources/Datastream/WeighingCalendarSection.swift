@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Contains details about milk recording calendars and sequences
+/// Details about milk recording calendars and sequences
 ///
 /// The weighing calendar is used for to plan recording dates on farm.
 /// Each farm has a recording sequence number

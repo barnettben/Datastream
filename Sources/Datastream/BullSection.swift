@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Contains identity and PTA information for a sire
+/// Identity and PTA information for a sire
 public struct BullDetails {
     
     /// The sire's breed code

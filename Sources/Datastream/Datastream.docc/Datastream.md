@@ -1,17 +1,21 @@
 # ``Datastream``
 
-Datastream is a parser for the NMR Datastream file format.
+Parse milk recording information from the NMR Datastream file format.
+
 
 ## Overview
 
-Datastream files are used to provide milk recording results to UK dairy farmers.  
+Datastream files are used to provide milk recording results to UK dairy farmers. These files contain details of milk production, animal identities, recorded events and genetic evaluations.
 
-This library can parse valid Datastream files into various data structures as detailed below. If unable to do so, it will throw an error to aid in locating problems within a given file.
+This library parses Datastream files into data structures as detailed below. If unable to do so, it will throw an error to aid in locating problems within a given file.
+
+
+## Parsing options
 
 There are two primary options for parsing:
 - Parsing into a single ``Datastream/Datastream`` structure
 
-    This creates a representation of an entire Datastream file where you do not need to be concerned about the underlying file structure. You can create this using ``Datastream/init(url:)``.
+    This creates a representation of an entire Datastream file where you do not need to be concerned about the underlying file structure. It is the simplest way to extract information from a file.
 
 - Parsing record-by-record:
 
@@ -21,50 +25,17 @@ There are two primary options for parsing:
 
 ## Topics
 
-### Essentials
+### Reading Files
 
 - ``Datastream/Datastream``
-- ``DatastreamError``
-
-### Sections
-
-- ``HerdDetails``
-- ``HerdRecording``
-- ``Animal``
-- ``AnimalStatement``
-- ``Lactation``
-- ``BullDetails``
+- <doc:DatastreamSections>
 
 ### Record-Based Parsing
 
-- ``AsyncRecordSequence``
-- ``Record``
-- ``RecordDescriptor``
-- ``BaseRecord``
+- <doc:RecordParsing>
+- <doc:RecordTypes>
 
-### Record types
+### Error Handling
 
-- ``TextRecord``
-- ``NMRDetails``
-- ``ServiceIndicators``
-- ``ServiceIndicatorsContinued``
-- ``RecordingPart1``
-- ``RecordingPart2``
-- ``AnimalIdentityRecord``
-- ``AnimalOtherDetailsRecord``
-- ``AnimalNameRecord``
-- ``AnimalParentsRecord``
-- ``PTARecord``
-- ``StatementHeaderRecord``
-- ``CowIDRecord``
-- ``WeighingRecord``
-- ``ServiceRecord``
-- ``ActualCalvingRecord``
-- ``ActualThirdCalfRecord``
-- ``AssumedCalvingRecord``
-- ``OtherEventRecord``
-- ``LactationDetailsRecord``
-- ``CompletedLactationRecord``
-- ``CalvingDetailsRecord``
-- ``CalvingExtraCalvesRecord``
-- ``LactationTotalsRecord``
+- ``DatastreamError``
+- ``ErrorCode``

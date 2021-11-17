@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Details of a completed lactation for an animal currently in the herd
 public struct Lactation {
     
     /// The management line number of this animal

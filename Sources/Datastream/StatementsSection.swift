@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// A model containing production-related information for a given animal's current lactation
+/// Production-related information for an animal's current lactation
 ///
 /// It may contain details of milk recordings, service, calving and other events details as
 /// well as production data for the current lactation.

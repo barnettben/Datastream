@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Information about the herd being recorded
 public struct HerdDetails {
     public var nationalHerdMark: String
     public var predominantBreed: Int
@@ -20,6 +21,7 @@ public struct HerdDetails {
     public var nmrInformation: NMRInformation
 }
 
+/// NMR registration and service details for a farm
 public struct NMRInformation {
     public var nmrCounty: Int
     public var nmrOffice: Int
@@ -36,6 +38,7 @@ public struct NMRInformation {
     public var internalHerdRecords: [SomeRecord]
 }
 
+/// An overview of a single milk recording
 public struct HerdRecording {
     public var recordingDate: Date
     public var weighingSequence: Int

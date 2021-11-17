@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Represents a breed as used by the NMR recording system
+/// A breed as used by the NMR recording system
 public struct Breed {
     
     /// Numeric breed code

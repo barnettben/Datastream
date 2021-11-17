@@ -1,4 +1,7 @@
 # ``Datastream/Lactation``
+@Metadata {
+    @DocumentationExtension(mergeBehavior: append)
+}
 
 ## Topics
 
