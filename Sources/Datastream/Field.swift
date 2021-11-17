@@ -71,21 +71,31 @@ extension Field {
     
     // Standard library types
     // ---
-    func extractValue(from content: String) throws -> String {
+    
+    /// This is the base field-extracting function
+    ///
+    /// It just gets the text out and doesn't change it
+    private func extractRawValue(from content: String) throws -> String {
         assert(content.lengthOfBytes(using: .ascii) == Self.recordLength)
         let fieldStart = content.index(content.startIndex, offsetBy: location)
         let fieldEnd = content.index(fieldStart, offsetBy: length)
         return String(content[fieldStart ..< fieldEnd])
     }
+    
+    /// Returns a whitespace-trimmed string
+    func extractValue(from content: String) throws -> String {
+        let rawValue = try extractRawValue(from: content)
+        return rawValue.trimmingCharacters(in: .whitespaces)
+    }
     func extractValue(from content: String) throws -> Character {
-        let strValue: String = try extractValue(from: content)
+        let strValue: String = try extractRawValue(from: content)
         guard let value = strValue.first else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
         return value
     }
     func extractValue(from content: String) throws -> Int {
-        let strValue: String = try extractValue(from: content)
+        let strValue: String = try extractRawValue(from: content)
         guard var value = Int(strValue) else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
@@ -95,7 +105,7 @@ extension Field {
         return value
     }
     func extractValue(from content: String) throws -> Double {
-        let strValue: String = try extractValue(from: content)
+        let strValue: String = try extractRawValue(from: content)
         guard var value = Double(strValue) else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
@@ -105,7 +115,7 @@ extension Field {
         return value
     }
     func extractValue(from content: String) throws -> Bool {
-        let strValue: String = try extractValue(from: content)
+        let strValue: String = try extractRawValue(from: content)
         guard strValue.lengthOfBytes(using: .ascii) == 1 else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
@@ -113,7 +123,7 @@ extension Field {
         return !(strValue.isEmpty || strValue == "0" || strValue == "N")
     }
     func extractValue(from content: String) throws -> Date? {
-        let strValue: String = try extractValue(from: content)
+        let strValue: String = try extractRawValue(from: content)
         return DateFormatter.datastreamDateFormat.date(from: strValue)
     }
     func extractValue(from content: String) throws -> Date {
@@ -134,7 +144,7 @@ extension Field {
         return typedValue
     }
     func extractValue<T: RawRepresentable>(from content: String) throws -> T where T.RawValue == String {
-        let strValue: String = try extractValue(from: content)
+        let strValue: String = try extractRawValue(from: content)
         guard let typedValue = T(rawValue: strValue) else {
             throw DatastreamError.init(code: .invalidContentType, recordContent: content)
         }
