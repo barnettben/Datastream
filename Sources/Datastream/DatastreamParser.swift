@@ -29,16 +29,28 @@ internal class DatastreamParser {
     func parse() async throws -> Datastream {
         recordIterator = records.makeAsyncIterator().peekable()
         
-        // These need doing in the order they appear in the datastream file
+        // All sections need reading in the order they appear in the datastream file
         let herdDetails                   = try await parseHerdDetailsSection()
         let recordings: [HerdRecording]   = try await parseRepeatingSection(startIdentifier: .recordingPart1)
         let animals: [Animal]             = try await parseRepeatingSection(startIdentifier: .animalIdentity)
         let nmrNumber                     = try await parseNMRNumber()
         let statements: [AnimalStatement] = try await parseRepeatingSection(startIdentifier: .cowIDRecord)
-        let _                             = try await parseNMRNumber() // Lactation section leader - ignore
-        let lactations: [Lactation]       = try await parseRepeatingSection(startIdentifier: .lactationFixedDetails)
-        let bulls: [BullDetails]          = try await parseRepeatingSection(startIdentifier: .bullDetails)
-        let dams: [DeadDam]               = try await parseRepeatingSection(startIdentifier: .deadDamDetails)
+        
+        // Lactations, bull and dam identities are optional sections and may not appear
+        var lactations: [Lactation] = []
+        var bulls: [BullDetails] = []
+        var dams: [DeadDam] = []
+        if try await recordIterator!.peek()?.recordIdentifier.section == .lactation {
+            let _                         = try await parseNMRNumber() // Lactation section leader - ignore
+            lactations                    = try await parseRepeatingSection(startIdentifier: .lactationFixedDetails)
+        }
+        if try await recordIterator!.peek()?.recordIdentifier.section == .bullIdentity {
+            bulls                         = try await parseRepeatingSection(startIdentifier: .bullDetails)
+        }
+        if try await recordIterator!.peek()?.recordIdentifier.section == .damIdentity {
+            dams                          = try await parseRepeatingSection(startIdentifier: .deadDamDetails)
+        }
+        
         let weighCalendar                 = try await parseWeighingCalendarSection()
         let breeds: [Breed]               = try await parseRepeatingSection(startIdentifier: .breedRecord1)
         
@@ -60,8 +72,7 @@ extension DatastreamParser {
     private func parseHerdDetailsSection() async throws -> HerdDetails {
         precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
         let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.recordIdentifier == .nmrDetails,
-                     "Iterator must start at H1 to use \(#function)")
+        precondition(peekedRecord?.recordIdentifier == .nmrDetails, "Iterator must start at H1 to use \(#function)")
         
         var herdDetailsRecords: [Record] = []
         repeat {
@@ -80,8 +91,7 @@ extension DatastreamParser {
     private func parseRepeatingSection<T: RecordBatchInitializable>(startIdentifier: RecordIdentifier) async throws -> [T] {
         precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
         let peekedRecord = try await recordIterator?.peek()
-        precondition(peekedRecord?.recordIdentifier == startIdentifier,
-                     "Iterator must start at \(startIdentifier.rawValue) to parse into \(T.self)")
+        precondition(peekedRecord?.recordIdentifier == startIdentifier, "Iterator must start at \(startIdentifier.rawValue) to parse into \(T.self)")
         
         // Batch up records then make a `T` from them
         var parsedItems: [T] = []
