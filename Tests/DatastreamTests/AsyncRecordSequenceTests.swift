@@ -53,4 +53,16 @@ final class AsyncRecordSequenceTests: XCTestCase {
             XCTAssertEqual(error.code, .invalidLength)
         }
     }
+    
+    func testStructSpecialising() async throws {
+        let fileURL = Bundle.module.url(forResource: "DSMEMBER", withExtension: "DAT")!
+        var iterator = AsyncRecordSequence(url: fileURL).prefix(3).makeAsyncIterator()
+        
+        var currentRecord = try await iterator.next()
+        XCTAssertTrue(currentRecord is NMRDetails)
+        currentRecord = try await iterator.next()
+        XCTAssertTrue(currentRecord is AddressRecord)
+        currentRecord = try await iterator.next()
+        XCTAssertTrue(currentRecord is AddressRecord)
+    }
 }

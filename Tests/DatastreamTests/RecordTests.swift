@@ -56,10 +56,13 @@ final class RecordTests: XCTestCase {
         }
     }
     
-    func testNMRDetails() throws {
-        let content = RecordTests.goodRecordStrings.first!
-        let record = try NMRDetails(string: content)
-        XCTAssertEqual(record.recordIdentifier, .nmrDetails)
-        XCTAssertEqual(record.nationalHerdMark, "89000")
+    func testStringTrimming() throws {
+        let nmrDetails = try NMRDetails(string: Self.goodRecordStrings[0])
+        let addressRow = try AddressRecord(string: Self.goodRecordStrings[1])
+        let breedDetails = try BreedPart1Record(string: Self.goodRecordStrings[2])
+        
+        XCTAssertEqual(nmrDetails.herdPrefix, "FOR DEMO USE ONLY")
+        XCTAssertEqual(addressRow.content, "")
+        XCTAssertEqual(breedDetails.name, "HOLSTEIN")
     }
 }
