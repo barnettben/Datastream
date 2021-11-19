@@ -13,16 +13,30 @@ public struct DatastreamError: Error {
     /// A code representing the type of error thrown
     public var code: ErrorCode
     
+    /// A message describing the encountered error
+    public var message: String?
+    
     /// Provides context for the given error code
-    public var recordContent: String?
+    ///
+    /// This may differ depending on the particular error type.
+    /// For example, it could be the content of a record or a particular field
+    public var context: String?
+}
+
+extension DatastreamError: LocalizedError {
+    public var errorDescription: String? {
+        return message ?? String(describing: code)
+    }
 }
 
 /// A parsing error type
 public enum ErrorCode {
     
+    /// Thrown when a record of incorrect length is encountered
     case invalidLength
+    
+    /// Thrown when a record has an invalid checksum
     case invalidChecksum
-    case nonNumberChecksum
     
     /// Thrown when converting a field to the required type (eg. String -> Int) fails.
     case invalidContentType

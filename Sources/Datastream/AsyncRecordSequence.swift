@@ -54,7 +54,7 @@ public struct AsyncRecordSequence: AsyncSequence {
                 return nil
             }
             guard let recordIdentifier = RecordIdentifier(rawValue: String(line.prefix(2))) else {
-                throw DatastreamError(code: .unknownIdentifier, recordContent: line)
+                throw DatastreamError(code: .unknownIdentifier, message: "Record begins with unknown identifier '\(line.prefix(2))'.", context: line)
             }
             let record: Record
             if validateRecords == true {

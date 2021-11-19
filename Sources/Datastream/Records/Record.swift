@@ -32,10 +32,10 @@ extension Record {
     ///
     public init(validatingString content: String) throws {
         guard Self.recordLengthIsValid(content) == true else {
-            throw DatastreamError(code: .invalidLength, recordContent: content)
+            throw DatastreamError(code: .invalidLength, message: "Record length is invalid", context: content)
         }
         guard Self.recordChecksumIsValid(content) == true else {
-            throw DatastreamError(code: .invalidChecksum, recordContent: content)
+            throw DatastreamError(code: .invalidChecksum, message: "Record has invalid checksum", context: content)
         }
         try self.init(string: content)
     }
@@ -124,7 +124,7 @@ public struct SomeRecord: Record {
     
     public init(string content: String) throws {
         guard SomeRecord.recordLengthIsValid(content) else {
-            throw DatastreamError(code: .invalidLength, recordContent: content)
+            throw DatastreamError(code: .invalidLength, message: "Record length is invalid", context: content)
         }
         
         recordIdentifier = try Field.identifierField.extractValue(from: content)

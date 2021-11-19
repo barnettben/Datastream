@@ -106,7 +106,7 @@ extension DatastreamParser {
         precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
         
         guard let s0 = try await recordIterator?.next() as? NMRNumberRecord else {
-            throw DatastreamError(code: .malformedInput, recordContent: "Missing leader record S0 or L0.")
+            throw DatastreamError(code: .malformedInput, message: "Missing leader record S0 or L0.")
         }
         
         return s0.nmrNumber
@@ -129,7 +129,7 @@ extension DatastreamParser {
         
         let w3 = try await recordIterator!.next() as! WeighingCalendarEndRecord
         if w3.numberOfWeighQuarters != w2Count {
-            throw DatastreamError(code: .malformedInput, recordContent: "Number of W2 records (\(w2Count)) does not match W3 value (\(w3.numberOfWeighQuarters))")
+            throw DatastreamError(code: .malformedInput, message: "Number of W2 records (\(w2Count)) does not match W3 value (\(w3.numberOfWeighQuarters))")
         }
         
         return calendar
@@ -177,7 +177,7 @@ extension HerdDetails {
               let h7 = records.first(typed: ServiceIndicators.self),
               let h8 = records.first(typed: ServiceIndicatorsContinued.self)
               else {
-                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records: H1, H7 or H8")
+                  throw DatastreamError(code: .malformedInput, message: "Missing required datastream record(s): H1, H7 or H8")
               }
         let address = records.compactMap({ ($0 as? AddressRecord)?.content })
 
@@ -211,7 +211,7 @@ extension HerdRecording: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let part1 = records.first(typed: RecordingPart1.self),
               let part2 = records.first(typed: RecordingPart2.self) else {
-                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Must have pairs of HD/HE records.")
+                  throw DatastreamError(code: .malformedInput, message: "Missing required datastream record. HD/HE records must be present in pairs.")
               }
         self.init(recordingDate: part1.recordingDate,
                weighingSequence: part1.weighingSequence,
@@ -242,7 +242,7 @@ extension Animal: RecordBatchInitializable {
               let c4 = records.first(typed: AnimalParentsRecord.self),
               let _  = records.first(typed: PTARecord.self)
               else {
-                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Must have one each of C1 through C5. Optionally up to C8.")
+                  throw DatastreamError(code: .malformedInput, message: "Missing required datastream record. Must have one each of C1 through C5.")
               }
         
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
@@ -286,7 +286,7 @@ extension AnimalStatement: RecordBatchInitializable {
         guard let s1 = records.first(typed: CowIDRecord.self),
               let sx = records.first(typed: LactationDetailsRecord.self)
               else {
-                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream record. Each animal statement must have at least S1 and SX records.")
+                  throw DatastreamError(code: .malformedInput, message: "Missing required datastream record. Each animal statement must have at least S1 and SX records.")
               }
         let weighings = records.compactMap({ $0 as? WeighingRecord }).map { s3 in
             WeighingEvent(recordingDate: s3.recordingDate,
@@ -403,7 +403,7 @@ extension Lactation: RecordBatchInitializable {
               let l2 = records.first(typed: CalvingDetailsRecord.self),
               let l4 = records.first(typed: LactationTotalsRecord.self, identifiedBy: .lactation305dTotals)
               else {
-                  throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Each lactation must have at least L1, L2 and L4 records.")
+                  throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Each lactation must have at least L1, L2 and L4 records.")
               }
         
         let sire = SireDetails(sireBreed: l2.sireBreed,
@@ -503,7 +503,7 @@ extension LactationProduction {
 extension BullDetails: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let b1 = records.first(typed: BullDetailsRecord.self) else {
-            throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Bulls must have a B1 record.")
+            throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Bulls must have a B1 record.")
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         self.init(breed: b1.breed, identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
@@ -513,7 +513,7 @@ extension BullDetails: RecordBatchInitializable {
 extension DeadDam: RecordBatchInitializable {
     fileprivate init(records: [Record]) throws {
         guard let d1 = records.first(typed: DeadDamRecord.self) else {
-            throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Dead dams must have a D1 record.")
+            throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Dead dams must have a D1 record.")
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         self.init(identity: d1.identity, identityType: d1.identityType, identityAuthenticity: d1.identityAuthenticity, breedCode: d1.breed, pedigreeStatus: d1.pedigreeStatus, name: d1.longName, evaluations: evaluations)
@@ -525,7 +525,7 @@ extension Breed: RecordBatchInitializable {
         guard let w4 = records.first(typed: BreedPart1Record.self),
               let w5 = records.first(typed: BreedPart2Record.self),
               let w6 = records.first(typed: BreedPart3Record.self) else {
-            throw DatastreamError(code: .malformedInput, recordContent: "Missing required datastream records. Breeds must have W4, W5 and W6 records.")
+            throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Breeds must have W4, W5 and W6 records.")
         }
         self.init(code: w4.code,
             equivalent: w4.equivalent,

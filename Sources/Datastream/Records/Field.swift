@@ -90,14 +90,14 @@ extension Field {
     func extractValue(from content: String) throws -> Character {
         let strValue: String = try extractRawValue(from: content)
         guard let value = strValue.first else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create Character from String for \(self)", context: content)
         }
         return value
     }
     func extractValue(from content: String) throws -> Int {
         let strValue: String = try extractRawValue(from: content)
         guard var value = Int(strValue) else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create Int from '\(strValue)' for \(self)", context: content)
         }
         if let divisor = divisor {
             value = value / divisor
@@ -107,7 +107,7 @@ extension Field {
     func extractValue(from content: String) throws -> Double {
         let strValue: String = try extractRawValue(from: content)
         guard var value = Double(strValue) else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create Double from '\(strValue)' for \(self)", context: content)
         }
         if let divisor = divisor {
             value = value / Double(divisor)
@@ -117,7 +117,7 @@ extension Field {
     func extractValue(from content: String) throws -> Bool {
         let strValue: String = try extractRawValue(from: content)
         guard strValue.lengthOfBytes(using: .ascii) == 1 else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create Bool from '\(strValue)' for \(self)", context: content)
         }
         // Flag fields can be empty, 1/0, or Y/N. If empty, 0 or N, say false. All others true.
         return !(strValue.isEmpty || strValue == "0" || strValue == "N")
@@ -129,7 +129,8 @@ extension Field {
     func extractValue(from content: String) throws -> Date {
         let optionalValue: Date? = try extractValue(from: content)
         guard let value = optionalValue else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            let strValue: String = try extractRawValue(from: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create Date from '\(strValue)' for \(self)", context: content)
         }
         return value
     }
@@ -139,26 +140,32 @@ extension Field {
     func extractValue<T: RawRepresentable>(from content: String) throws -> T where T.RawValue == Int {
         let intValue: Int = try extractValue(from: content)
         guard let typedValue = T(rawValue: intValue) else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create \(type(of: T.self)) from '\(intValue)' for \(self)", context: content)
         }
         return typedValue
     }
     func extractValue<T: RawRepresentable>(from content: String) throws -> T where T.RawValue == String {
         let strValue: String = try extractRawValue(from: content)
         guard let typedValue = T(rawValue: strValue) else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create \(type(of: T.self)) from '\(strValue)' for \(self)", context: content)
         }
         return typedValue
     }
     func extractValue<T: RawRepresentable>(from content: String) throws -> T where T.RawValue == Character {
         let charValue: Character = try extractValue(from: content)
         guard let typedValue = T(rawValue: charValue) else {
-            throw DatastreamError.init(code: .invalidContentType, recordContent: content)
+            throw DatastreamError.init(code: .invalidContentType, message: "Unable to create \(type(of: T.self)) from '\(charValue)' for \(self)", context: content)
         }
         return typedValue
     }
     func extractValue<T: RawRepresentable>(from content: String) throws -> T? where T.RawValue == Character {
         let charValue: Character = try extractValue(from: content)
         return T(rawValue: charValue)
+    }
+}
+
+extension Field: CustomStringConvertible {
+    var description: String {
+        return "Field(\(location),\(length))"
     }
 }
