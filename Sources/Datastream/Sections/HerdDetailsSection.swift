@@ -35,7 +35,6 @@ public struct NMRInformation {
     public var calfCropListCycle: Int
     public var isHerdwatch: Bool
     public var cellCountMembership: CellCountMembership
-    public var internalHerdRecords: [SomeRecord]
 }
 
 /// An overview of a single milk recording

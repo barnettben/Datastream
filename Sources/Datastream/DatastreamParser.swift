@@ -180,8 +180,6 @@ extension HerdDetails {
                   throw DatastreamError(code: .malformedInput, message: "Missing required datastream record(s): H1, H7 or H8")
               }
         let address = records.compactMap({ ($0 as? AddressRecord)?.content })
-
-        let internalRecords = records.filter({ $0.recordIdentifier.isPrivateUse }).map({ $0 as! SomeRecord })
         let nmrInfo = NMRInformation(nmrCounty: h1.nmrCounty,
                                      nmrOffice: h1.nmrOffice,
                                recordingScheme: h1.recordingScheme,
@@ -193,8 +191,7 @@ extension HerdDetails {
                                   cowCardCycle: h7.cowCardCycle,
                              calfCropListCycle: h7.calfCropListCycle,
                                    isHerdwatch: h8.isHerdwatchMember,
-                           cellCountMembership: h8.cellCountMembership,
-                           internalHerdRecords: internalRecords)
+                           cellCountMembership: h8.cellCountMembership)
         
         self.init(nationalHerdMark: h1.nationalHerdMark,
                   predominantBreed: h1.predominantBreed,
