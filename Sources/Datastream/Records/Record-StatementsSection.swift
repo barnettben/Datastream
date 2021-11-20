@@ -172,7 +172,7 @@ public struct ActualCalvingRecord: Record {
 public struct ActualThirdCalfRecord: Record {
     public var recordIdentifier: RecordIdentifier
     public static var representableIdentifiers: [RecordIdentifier] {
-        return [.eventActualCalving]
+        return [.eventCalving3rdCalf]
     }
 
     public var calfBreed: Int
