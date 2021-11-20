@@ -123,7 +123,7 @@ public struct ServiceEvent {
     public var eventDate: Date
     
     /// Whether this event is authentic
-    public var isAuthentic: Bool
+    public var evenAuthenticity: ItemAuthenticity
     
     /// The service sire breed
     public var sireBreed: Int

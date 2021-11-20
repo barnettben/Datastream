@@ -112,7 +112,7 @@ public struct ServiceRecord: Record {
     }
 
     public var eventDate: Date
-    public var isAuthentic: Bool
+    public var eventAuthenticity: ItemAuthenticity
     public var sireBreed: Int
     public var sireIdentity: String
     public var sireIdentityAuthenticity: ItemAuthenticity
@@ -123,7 +123,7 @@ public struct ServiceRecord: Record {
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
-        isAuthentic = try Field(location: 10, length: 1).extractValue(from: content)
+        eventAuthenticity = try Field(location: 10, length: 1).extractValue(from: content)
         sireBreed = try Field(location: 15, length: 2).extractValue(from: content)
         sireIdentity = try Field(location: 18, length: 12).extractValue(from: content)
         sireIdentityAuthenticity = try Field(location: 31, length: 1).extractValue(from: content)

@@ -298,7 +298,7 @@ extension AnimalStatement: RecordBatchInitializable {
         }
         let services = records.compactMap({ $0 as? ServiceRecord }).map { s4 in
             ServiceEvent(eventDate: s4.eventDate,
-                       isAuthentic: s4.isAuthentic,
+                  evenAuthenticity: s4.eventAuthenticity,
                          sireBreed: s4.sireBreed,
                       sireIdentity: s4.sireIdentity,
           sireIdentityAuthenticity: s4.sireIdentityAuthenticity,
