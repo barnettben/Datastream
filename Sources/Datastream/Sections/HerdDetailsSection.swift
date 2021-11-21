@@ -10,7 +10,7 @@ import Foundation
 /// Information about the herd being recorded
 public struct HerdDetails {
     public var nationalHerdMark: String
-    public var predominantBreed: Int
+    public var predominantBreed: Breed
     public var herdPrefix: String
     public var enrolDate: Date
     

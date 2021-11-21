@@ -44,6 +44,6 @@ final class DatastreamParserTests: XCTestCase {
         XCTAssertEqual(content.bulls.count, 0)
         XCTAssertEqual(content.deadDams.count, 0)
         XCTAssertEqual(content.weighingCalendar.weighingDates.count, 3)
-        XCTAssertEqual(content.breeds.count, 1)
+        XCTAssertEqual(content.breeds.count, 98)
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 extension Breed {
     
     convenience init(code: Int, gestation: Int, type: BreedType, isImported: Bool, name: String) {
-        self.init(code: code, equivalent: 0, name: "", abbreviation: "", gestationPeriod: gestation, type: type, isImported: isImported, minDailyYield: 0, maxDailyYield: 0, lowMilkQuery: 0, highMilkQuery: 0, minFatPct: 0, maxFatPct: 0, lowFatQuery: 0, highFatQuery: 0, minProteinPct: 0, maxProteinPct: 0, lowProteinQuery: 0, highProteinQuery: 0, minLactosePct: 0, maxLactosePct: 0, lowLactoseQuery: 0, highLactoseQuery: 0, high305dYieldQuery: 0, highNaturalYieldQuery: 0, max305dYield: 0, maxNaturalYield: 0)
+        self.init(code: code, equivalent: nil, name: name, abbreviation: "", gestationPeriod: gestation, type: type, isImported: isImported, minDailyYield: 0, maxDailyYield: 0, lowMilkQuery: 0, highMilkQuery: 0, minFatPct: 0, maxFatPct: 0, lowFatQuery: 0, highFatQuery: 0, minProteinPct: 0, maxProteinPct: 0, lowProteinQuery: 0, highProteinQuery: 0, minLactosePct: 0, maxLactosePct: 0, lowLactoseQuery: 0, highLactoseQuery: 0, high305dYieldQuery: 0, highNaturalYieldQuery: 0, max305dYield: 0, maxNaturalYield: 0)
     }
     
     func mergeDetails(from otherBreed: Breed) {

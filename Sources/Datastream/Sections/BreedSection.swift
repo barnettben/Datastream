@@ -101,7 +101,7 @@ public final class Breed {
     public var maxNaturalYield: Int
     
     public init(code: Int,
-                equivalent: Int,
+                equivalent: Breed?,
                 name: String,
                 abbreviation: String,
                 gestationPeriod: Int,

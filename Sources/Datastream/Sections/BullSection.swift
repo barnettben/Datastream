@@ -10,8 +10,8 @@ import Foundation
 /// Identity and PTA information for a sire
 public struct BullDetails {
     
-    /// The sire's breed code
-    public var breedCode: Int
+    /// The sire's breed
+    public var breed: Breed
     
     /// The sire's identity number
     public var identity: String

@@ -24,8 +24,8 @@ public struct AnimalStatement {
     /// Whether this animal is a cow or youngstock
     public var isYoungstock: Bool
     
-    /// The breed code of this animal
-    public var breedCode: Int
+    /// The breed  of this animal
+    public var breed: Breed
     
     /// The animal's lactation number.
     ///
@@ -126,7 +126,7 @@ public struct ServiceEvent {
     public var evenAuthenticity: ItemAuthenticity
     
     /// The service sire breed
-    public var sireBreed: Int
+    public var sireBreed: Breed
     
     /// The service sire identity
     public var sireIdentity: String
@@ -160,7 +160,7 @@ public struct CalvingEvent {
     public var isAssumed: Bool
     
     /// The breed of the calf born
-    public var calfBreedCode: Int
+    public var calfBreed: Breed
     
     /// The identity of the calf born
     public var calfIdentity: String
@@ -242,8 +242,8 @@ public struct LactationDetails {
 
 /// Details of a service sire
 public struct SireDetails {
-    /// The breed code of this sire
-    public var sireBreed: Int
+    /// The breed of this sire
+    public var sireBreed: Breed
     
     /// The identity of this sire
     public var sireIdentity: String

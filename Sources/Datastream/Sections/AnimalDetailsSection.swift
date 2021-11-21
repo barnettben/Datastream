@@ -26,7 +26,7 @@ public struct Animal {
     public var lineNumber: String
     
     /// The breed of the animal
-    public var breedCode: Int
+    public var breed: Breed
     
     /// Earmark or herdbook number
     public var identity: String
@@ -44,7 +44,7 @@ public struct Animal {
     public var identityAuthenticity: ItemAuthenticity
     
     /// An alternative breed for this animal
-    public var alternativeBreed: Int
+    public var alternativeBreed: Breed
     
     /// An alternative identity number
     public var alternativeID: String
@@ -220,7 +220,7 @@ public struct AnimalParent {
     public var identityType: IdentityType
     
     /// The breed of this parent
-    public var breed: Int
+    public var breed: Breed
     
     /// The pedigree status of this parent
     ///

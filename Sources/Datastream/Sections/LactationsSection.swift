@@ -26,8 +26,8 @@ public struct Lactation {
     /// See  `AnimalStatement`.``AnimalStatement/estimatedLactationNumber`` for more details
     public var estimatedLactationNumber: Int
     
-    /// This animal's breed code
-    public var breedCode: Int
+    /// This animal's breed
+    public var breed: Breed
     
     /// The number of male calves born this lactation
     public var totalMaleCalves: Int

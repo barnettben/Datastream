@@ -24,7 +24,7 @@ public struct DeadDam {
     public var identityAuthenticity: ItemAuthenticity
     
     /// The dam's breed
-    public var breedCode: Int
+    public var breed: Breed
     
     /// The dams's pedigree status
     public var pedigreeStatus: PedigreeStatus

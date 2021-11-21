@@ -14,6 +14,7 @@ internal class DatastreamParser {
     
     private var fileURL: URL
     private var recordIterator: PeekableIterator<AsyncRecordSequence.AsyncIterator>?
+    private var knownBreeds: [Breed] = Breed.knownBreeds
     
     
     /// Returns a parser for reading a datastream file at the provided URL.
@@ -22,12 +23,13 @@ internal class DatastreamParser {
     }
     
     /// The datastream file contents, as an asynchronous sequence of `Record`s.
-    var records: AsyncRecordSequence {
+    private var records: AsyncRecordSequence {
         return AsyncRecordSequence(url: fileURL)
     }
     
     func parse() async throws -> Datastream {
         recordIterator = records.makeAsyncIterator().peekable()
+        precondition(knownBreeds.first(withBreedCode: 29) != nil)
         
         // All sections need reading in the order they appear in the datastream file
         let herdDetails                   = try await parseHerdDetailsSection()
@@ -52,7 +54,7 @@ internal class DatastreamParser {
         }
         
         let weighCalendar                 = try await parseWeighingCalendarSection()
-        let breeds: [Breed]               = try await parseRepeatingSection(startIdentifier: .breedRecord1)
+        let breeds: [Breed]               = try await parseBreedsSection()
         
         return Datastream(herdDetails: herdDetails,
                            recordings: recordings,
@@ -80,7 +82,7 @@ extension DatastreamParser {
             herdDetailsRecords.append(currentRecord)
         } while try await recordIterator!.peek()?.recordIdentifier != .recordingPart1
         
-        return try HerdDetails(records: herdDetailsRecords)
+        return try HerdDetails(records: herdDetailsRecords, context: ParserContext(breeds: knownBreeds))
     }
     
     /// Parses a repeating group of records into a provided type
@@ -96,7 +98,7 @@ extension DatastreamParser {
         // Batch up records then make a `T` from them
         var parsedItems: [T] = []
         while let batchedRecords = try await recordIterator!.collect(untilIdentifier: startIdentifier) {
-            parsedItems.append(try T(records: batchedRecords))
+            parsedItems.append(try T(records: batchedRecords, context: ParserContext(breeds: knownBreeds)))
         }
         
         return parsedItems
@@ -134,6 +136,24 @@ extension DatastreamParser {
         
         return calendar
     }
+    
+    private func parseBreedsSection() async throws -> [Breed] {
+        precondition(recordIterator != nil, "Must have an iterator before calling \(#function)")
+        let peekedRecord = try await recordIterator?.peek()
+        precondition(peekedRecord?.recordIdentifier == .breedRecord1, "Iterator must start at W4 to use \(#function)")
+        
+        // Batch up records then make create/update a breed object
+        while let batchedRecords = try await recordIterator!.collect(untilIdentifier: .breedRecord1) {
+            let newBreed = try Breed(records: batchedRecords, context: ParserContext(breeds: knownBreeds))
+            if let existingBreed = knownBreeds.first(withBreedCode: newBreed.code) {
+                existingBreed.mergeDetails(from: newBreed)
+            } else {
+                knownBreeds.append(newBreed)
+            }
+        }
+        
+        return knownBreeds
+    }
 }
 
 // MARK: -
@@ -168,11 +188,14 @@ extension PeekableIterator where PeekableIterator.Element == Record {
 
 // MARK: -
 fileprivate protocol RecordBatchInitializable {
-    init(records: [Record]) throws
+    init(records: [Record], context: ParserContext) throws
+}
+fileprivate struct ParserContext {
+    var breeds: [Breed]
 }
 
-extension HerdDetails {
-    fileprivate init(records: [Record]) throws {
+extension HerdDetails: RecordBatchInitializable {
+    fileprivate init(records: [Record], context: ParserContext) throws {
         guard let h1 = records.first(typed: NMRDetails.self),
               let h7 = records.first(typed: ServiceIndicators.self),
               let h8 = records.first(typed: ServiceIndicatorsContinued.self)
@@ -194,7 +217,7 @@ extension HerdDetails {
                            cellCountMembership: h8.cellCountMembership)
         
         self.init(nationalHerdMark: h1.nationalHerdMark,
-                  predominantBreed: h1.predominantBreed,
+                  predominantBreed: context.breeds.withCode(h1.predominantBreed),
                         herdPrefix: h1.herdPrefix,
                          enrolDate: h1.enrolDate,
                            address: address,
@@ -205,7 +228,7 @@ extension HerdDetails {
 }
 
 extension HerdRecording: RecordBatchInitializable {
-    fileprivate init(records: [Record]) throws {
+    fileprivate init(records: [Record], context: ParserContext) throws {
         guard let part1 = records.first(typed: RecordingPart1.self),
               let part2 = records.first(typed: RecordingPart2.self) else {
                   throw DatastreamError(code: .malformedInput, message: "Missing required datastream record. HD/HE records must be present in pairs.")
@@ -232,7 +255,7 @@ extension HerdRecording: RecordBatchInitializable {
 }
 
 extension Animal: RecordBatchInitializable {
-    fileprivate init(records: [Record]) throws {
+    fileprivate init(records: [Record], context: ParserContext) throws {
         guard let c1 = records.first(typed: AnimalIdentityRecord.self),
               let c2 = records.first(typed: AnimalOtherDetailsRecord.self),
               let c3 = records.first(typed: AnimalNameRecord.self),
@@ -245,24 +268,24 @@ extension Animal: RecordBatchInitializable {
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         let dam = AnimalParent(identity: c4.damIdentity,
                            identityType: c4.damIdentityType,
-                                  breed: c4.damBreed,
+                                  breed: context.breeds.withCode(c4.damBreed),
                          pedigreeStatus: c4.damPedigreeStatus,
                    identityAuthenticity: c4.damIdentityAuthenticity)
         let sire = AnimalParent(identity: c4.sireIdentity,
                             identityType: c4.sireIdentityType,
-                                   breed: c4.sireBreed,
+                                   breed: context.breeds.withCode(c4.sireBreed),
                           pedigreeStatus: nil,
                     identityAuthenticity: nil)
         self.init(nmrHerdNumber: c1.nmrHerdNumber,
                       aliveFlag: c1.liveFlag,
                      lineNumber: c1.lineNumber,
-                      breedCode: c1.breedID,
+                          breed: context.breeds.withCode(c1.breedID),
                        identity: c1.identityNumber,
                    identityType: c1.identityType,
                  pedigreeStatus: c1.pedigreeStatus,
                 hbnAuthenticity: c1.hbnAuthenticity,
            identityAuthenticity: c1.earmarkAuthenticity,
-               alternativeBreed: c2.alternativeBreed,
+               alternativeBreed: context.breeds.withCode(c2.alternativeBreed),
                   alternativeID: c2.alternativeIdentity,
                       birthDate: c2.birthDate,
                    isYoungstock: c2.isYoungstock,
@@ -279,7 +302,7 @@ extension Animal: RecordBatchInitializable {
 }
 
 extension AnimalStatement: RecordBatchInitializable {
-    fileprivate init(records: [Record]) throws {
+    fileprivate init(records: [Record], context: ParserContext) throws {
         guard let s1 = records.first(typed: CowIDRecord.self),
               let sx = records.first(typed: LactationDetailsRecord.self)
               else {
@@ -299,7 +322,7 @@ extension AnimalStatement: RecordBatchInitializable {
         let services = records.compactMap({ $0 as? ServiceRecord }).map { s4 in
             ServiceEvent(eventDate: s4.eventDate,
                   evenAuthenticity: s4.eventAuthenticity,
-                         sireBreed: s4.sireBreed,
+                         sireBreed: context.breeds.withCode(s4.sireBreed),
                       sireIdentity: s4.sireIdentity,
           sireIdentityAuthenticity: s4.sireIdentityAuthenticity,
                    pregnancyStatus: s4.pregnancyStatus)
@@ -311,7 +334,7 @@ extension AnimalStatement: RecordBatchInitializable {
                 let calf1 = CalvingEvent(eventDate: s5.eventDate,
                                  eventAuthenticity: s5.eventAuthenticity,
                                          isAssumed: false,
-                                     calfBreedCode: s5.calf1Breed,
+                                         calfBreed: context.breeds.withCode(s5.calf1Breed),
                                       calfIdentity: s5.calf1Identity,
                                   calfIdentityType: s5.calf1IdentityType,
                           calfIdentityAuthenticity: s5.calf1IdentityAuthenticity,
@@ -322,7 +345,7 @@ extension AnimalStatement: RecordBatchInitializable {
                 let calf2 = CalvingEvent(eventDate: s5.eventDate,
                                  eventAuthenticity: s5.eventAuthenticity,
                                          isAssumed: false,
-                                     calfBreedCode: s5.calf2Breed,
+                                         calfBreed: context.breeds.withCode(s5.calf2Breed),
                                       calfIdentity: s5.calf2Identity,
                                   calfIdentityType: s5.calf2IdentityType,
                           calfIdentityAuthenticity: s5.calf2IdentityAuthenticity,
@@ -335,7 +358,7 @@ extension AnimalStatement: RecordBatchInitializable {
                     let calf3 = CalvingEvent(eventDate: s5.eventDate,
                                      eventAuthenticity: s5.eventAuthenticity,
                                              isAssumed: false,
-                                         calfBreedCode: s6.calfBreed,
+                                             calfBreed: context.breeds.withCode(s6.calfBreed),
                                           calfIdentity: s6.calfIdentity,
                                       calfIdentityType: s6.calfIdentityType,
                               calfIdentityAuthenticity: s6.calfIdentityAuthenticity,
@@ -348,7 +371,7 @@ extension AnimalStatement: RecordBatchInitializable {
             let assumedCalf = CalvingEvent(eventDate: s7.eventDate,
                                    eventAuthenticity: .nonAuthentic,
                                            isAssumed: true,
-                                       calfBreedCode: 0,
+                                           calfBreed: context.breeds.withCode(29),
                                         calfIdentity: "",
                                     calfIdentityType: .noID,
                             calfIdentityAuthenticity: .nonAuthentic,
@@ -370,7 +393,7 @@ extension AnimalStatement: RecordBatchInitializable {
                                      averagePencePerLitre: sx.averagePencePerLitre,
                                               seasonality: sx.seasonality,
                                          averageCellCount: sx.averageCellCount)
-        let sireDetails = SireDetails(sireBreed: s1.sireBreedCode,
+        let sireDetails = SireDetails(sireBreed: context.breeds.withCode(s1.sireBreedCode),
                                    sireIdentity: s1.sireIdentity,
                                sireIdentityType: s1.sireIdentityType,
                        sireIdentityAuthenticity: s1.sireIdentityAuthenticity)
@@ -378,7 +401,7 @@ extension AnimalStatement: RecordBatchInitializable {
         self.init(lineNumber: s1.lineNumber,
                    aliveFlag: s1.liveFlag,
                 isYoungstock: s1.isYoungstock,
-                   breedCode: s1.breedCode,
+                       breed: context.breeds.withCode(s1.breedCode),
              lactationNumber: s1.lactationNumber,
     estimatedLactationNumber: s1.estimatedLactationNumber,
              managementGroup: s1.group,
@@ -395,7 +418,7 @@ extension AnimalStatement: RecordBatchInitializable {
 }
 
 extension Lactation: RecordBatchInitializable {
-    fileprivate init(records: [Record]) throws {
+    fileprivate init(records: [Record], context: ParserContext) throws {
         guard let l1 = records.first(typed: CompletedLactationRecord.self),
               let l2 = records.first(typed: CalvingDetailsRecord.self),
               let l4 = records.first(typed: LactationTotalsRecord.self, identifiedBy: .lactation305dTotals)
@@ -403,7 +426,7 @@ extension Lactation: RecordBatchInitializable {
                   throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Each lactation must have at least L1, L2 and L4 records.")
               }
         
-        let sire = SireDetails(sireBreed: l2.sireBreed,
+        let sire = SireDetails(sireBreed: context.breeds.withCode(l2.sireBreed),
                             sireIdentity: l2.sireIdentity,
                         sireIdentityType: l2.sireIdentityType,
                 sireIdentityAuthenticity: l2.sireIdentityAuthenticity)
@@ -414,7 +437,7 @@ extension Lactation: RecordBatchInitializable {
             let calf1 = CalvingEvent(eventDate: l2.calvingDate,
                              eventAuthenticity: l2.calvingDateAuthenticity,
                                      isAssumed: false,
-                                 calfBreedCode: l2.calfBreed,
+                                     calfBreed: context.breeds.withCode(l2.calfBreed),
                                   calfIdentity: l2.calfIdentity,
                               calfIdentityType: l2.calfIdentityType,
                       calfIdentityAuthenticity: l2.calfIdentityAuthenticity,
@@ -426,7 +449,7 @@ extension Lactation: RecordBatchInitializable {
             let calf2 = CalvingEvent(eventDate: l2.calvingDate,
                              eventAuthenticity: l2.calvingDateAuthenticity,
                                      isAssumed: false,
-                                 calfBreedCode: l3.calf2Breed,
+                                     calfBreed: context.breeds.withCode(l3.calf2Breed),
                                   calfIdentity: l3.calf2Identity,
                               calfIdentityType: l3.calf2IdentityType,
                       calfIdentityAuthenticity: l3.calf2IdentityAuthenticity,
@@ -437,7 +460,7 @@ extension Lactation: RecordBatchInitializable {
                 let calf3 = CalvingEvent(eventDate: l2.calvingDate,
                                  eventAuthenticity: l2.calvingDateAuthenticity,
                                          isAssumed: false,
-                                     calfBreedCode: l3.calf3Breed,
+                                         calfBreed: context.breeds.withCode(l3.calf3Breed),
                                       calfIdentity: l3.calf3Identity,
                                   calfIdentityType: l3.calf3IdentityType,
                           calfIdentityAuthenticity: l3.calf3IdentityAuthenticity,
@@ -453,7 +476,7 @@ extension Lactation: RecordBatchInitializable {
                    aliveFlag: l1.aliveFlag,
              lactationNumber: l1.lactationNumber,
     estimatedLactationNumber: l1.estimatedLactationNumber,
-                   breedCode: l1.breedCode,
+                       breed: context.breeds.withCode(l1.breedCode),
              totalMaleCalves: l1.totalMaleCalves,
            totalFemaleCalves: l1.totalFemaleCalves,
              totalDeadCalves: l1.totalDeadCalves,
@@ -498,37 +521,40 @@ extension LactationProduction {
 }
 
 extension BullDetails: RecordBatchInitializable {
-    fileprivate init(records: [Record]) throws {
+    fileprivate init(records: [Record], context: ParserContext) throws {
         guard let b1 = records.first(typed: BullDetailsRecord.self) else {
             throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Bulls must have a B1 record.")
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
-        self.init(breedCode: b1.breed, identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
+        self.init(breed: context.breeds.withCode(b1.breed), identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
     }
 }
 
 extension DeadDam: RecordBatchInitializable {
-    fileprivate init(records: [Record]) throws {
+    fileprivate init(records: [Record], context: ParserContext) throws {
         guard let d1 = records.first(typed: DeadDamRecord.self) else {
             throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Dead dams must have a D1 record.")
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
-        self.init(identity: d1.identity, identityType: d1.identityType, identityAuthenticity: d1.identityAuthenticity, breedCode: d1.breed, pedigreeStatus: d1.pedigreeStatus, name: d1.longName, evaluations: evaluations)
+        self.init(identity: d1.identity, identityType: d1.identityType, identityAuthenticity: d1.identityAuthenticity, breed: context.breeds.withCode(d1.breed), pedigreeStatus: d1.pedigreeStatus, name: d1.longName, evaluations: evaluations)
     }
 }
 
 extension Breed: RecordBatchInitializable {
-    fileprivate init(records: [Record]) throws {
+    fileprivate convenience init(records: [Record], context: ParserContext) throws {
         guard let w4 = records.first(typed: BreedPart1Record.self),
               let w5 = records.first(typed: BreedPart2Record.self),
               let w6 = records.first(typed: BreedPart3Record.self) else {
             throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Breeds must have W4, W5 and W6 records.")
         }
+        print(w4.abbreviation)
         self.init(code: w4.code,
-            equivalent: w4.equivalent,
+            equivalent: context.breeds.withCode(w4.equivalent),
                   name: w4.name,
           abbreviation: w4.abbreviation,
        gestationPeriod: w4.gestationPeriod,
+                  type: .unspecified,
+            isImported: false,
          minDailyYield: w4.minDailyYield,
          maxDailyYield: w4.maxDailyYield,
           lowMilkQuery: w4.lowMilkQuery,
@@ -590,5 +616,16 @@ extension WeighingDate {
                               pmWeighingDay: quarter.pmDay3,
                               amWeighingDay: quarter.amDay3)
         return [m1, m2, m3]
+    }
+}
+
+extension Array where Element == Breed {
+    
+    /// Returns the breed with a given code, or the unknown breed if not found
+    public func withCode(_ code: Int) -> Breed {
+        if let breed = first(where: { $0.code == code }) {
+            return breed
+        }
+        return first(where: { $0.code == 29 })!
     }
 }
