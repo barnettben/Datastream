@@ -29,7 +29,7 @@ internal class DatastreamParser {
     
     func parse() async throws -> Datastream {
         recordIterator = records.makeAsyncIterator().peekable()
-        precondition(knownBreeds.first(withBreedCode: 29) != nil)
+        precondition(knownBreeds.first(breedCode: 29) != nil)
         
         // All sections need reading in the order they appear in the datastream file
         let herdDetails                   = try await parseHerdDetailsSection()
@@ -145,7 +145,7 @@ extension DatastreamParser {
         // Batch up records then make create/update a breed object
         while let batchedRecords = try await recordIterator!.collect(untilIdentifier: .breedRecord1) {
             let newBreed = try Breed(records: batchedRecords, context: ParserContext(breeds: knownBreeds))
-            if let existingBreed = knownBreeds.first(withBreedCode: newBreed.code) {
+            if let existingBreed = knownBreeds.first(breedCode: newBreed.code) {
                 existingBreed.mergeDetails(from: newBreed)
             } else {
                 knownBreeds.append(newBreed)
