@@ -21,7 +21,7 @@ public struct AnimalIdentityRecord: Record {
     }
     public var liveFlag: Int
     public var lineNumber: String
-    public var breedID: Int
+    public var breedCode: Int
     public var identityNumber: String
     public var identityType: IdentityType
     public var pedigreeStatus: PedigreeStatus
@@ -38,7 +38,7 @@ public struct AnimalIdentityRecord: Record {
         herdCode = try Field(location: 12, length: 2).extractValue(from: content)
         liveFlag = try Field(location: 15, length: 1).extractValue(from: content)
         lineNumber = try Field(location: 17, length: 4).extractValue(from: content)
-        breedID = try Field(location: 22, length: 2).extractValue(from: content)
+        breedCode = try Field(location: 22, length: 2).extractValue(from: content)
         identityNumber = try Field(location: 25, length: 12).extractValue(from: content)
         identityType = try Field(location: 38, length: 1).extractValue(from: content)
         pedigreeStatus = try Field(location: 40, length: 1).extractValue(from: content)
@@ -53,7 +53,7 @@ public struct AnimalOtherDetailsRecord: Record {
         return [.animalOtherDetails]
     }
 
-    public var alternativeBreed: Int
+    public var alternativeBreedCode: Int
     public var alternativeIdentity: String
     public var birthDate: Date
     public var isYoungstock: Bool
@@ -67,7 +67,7 @@ public struct AnimalOtherDetailsRecord: Record {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
-        alternativeBreed = try Field(location: 3, length: 2).extractValue(from: content)
+        alternativeBreedCode = try Field(location: 3, length: 2).extractValue(from: content)
         alternativeIdentity = try Field(location: 6, length: 12).extractValue(from: content)
         birthDate = try Field(location: 19, length: 6).extractValue(from: content)
         isYoungstock = try Field(location: 26, length: 1).extractValue(from: content)
@@ -104,10 +104,10 @@ public struct AnimalParentsRecord: Record {
         return [.animalSireDam]
     }
 
-    public var sireBreed: Int
+    public var sireBreedCode: Int
     public var sireIdentity: String
     public var sireIdentityType: IdentityType
-    public var damBreed: Int
+    public var damBreedCode: Int
     public var damIdentity: String
     public var damIdentityType: IdentityType
     public var damPedigreeStatus: PedigreeStatus
@@ -117,10 +117,10 @@ public struct AnimalParentsRecord: Record {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
-        sireBreed = try Field(location: 3, length: 2).extractValue(from: content)
+        sireBreedCode = try Field(location: 3, length: 2).extractValue(from: content)
         sireIdentity = try Field(location: 6, length: 12).extractValue(from: content)
         sireIdentityType = try Field(location: 19, length: 1).extractValue(from: content)
-        damBreed = try Field(location: 23, length: 2).extractValue(from: content)
+        damBreedCode = try Field(location: 23, length: 2).extractValue(from: content)
         damIdentity = try Field(location: 26, length: 12).extractValue(from: content)
         damIdentityType = try Field(location: 39, length: 1).extractValue(from: content)
         damPedigreeStatus = try Field(location: 41, length: 1).extractValue(from: content)

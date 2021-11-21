@@ -113,7 +113,7 @@ public struct ServiceRecord: Record {
 
     public var eventDate: Date
     public var eventAuthenticity: ItemAuthenticity
-    public var sireBreed: Int
+    public var sireBreedCode: Int
     public var sireIdentity: String
     public var sireIdentityAuthenticity: ItemAuthenticity
     public var pregnancyStatus: PregnancyStatus
@@ -124,7 +124,7 @@ public struct ServiceRecord: Record {
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         eventAuthenticity = try Field(location: 10, length: 1).extractValue(from: content)
-        sireBreed = try Field(location: 15, length: 2).extractValue(from: content)
+        sireBreedCode = try Field(location: 15, length: 2).extractValue(from: content)
         sireIdentity = try Field(location: 18, length: 12).extractValue(from: content)
         sireIdentityAuthenticity = try Field(location: 31, length: 1).extractValue(from: content)
         pregnancyStatus = try Field(location: 37, length: 1).extractValue(from: content)
@@ -139,12 +139,12 @@ public struct ActualCalvingRecord: Record {
 
     public var eventDate: Date
     public var eventAuthenticity: ItemAuthenticity
-    public var calf1Breed: Int
+    public var calf1BreedCode: Int
     public var calf1Identity: String
     public var calf1IdentityType: IdentityType
     public var calf1IdentityAuthenticity: ItemAuthenticity
     public var calf1Sex: Sex?
-    public var calf2Breed: Int
+    public var calf2BreedCode: Int
     public var calf2Identity: String
     public var calf2IdentityType: IdentityType
     public var calf2IdentityAuthenticity: ItemAuthenticity
@@ -156,12 +156,12 @@ public struct ActualCalvingRecord: Record {
         
         eventDate = try Field(location: 3, length: 6).extractValue(from: content)
         eventAuthenticity = try Field(location: 10, length: 1).extractValue(from: content)
-        calf1Breed = try Field(location: 15, length: 2).extractValue(from: content)
+        calf1BreedCode = try Field(location: 15, length: 2).extractValue(from: content)
         calf1Identity = try Field(location: 18, length: 12).extractValue(from: content)
         calf1IdentityType = try Field(location: 31, length: 1).extractValue(from: content)
         calf1IdentityAuthenticity = try Field(location: 33, length: 1).extractValue(from: content)
         calf1Sex = try Field(location: 35, length: 1).extractValue(from: content)
-        calf2Breed = try Field(location: 37, length: 2).extractValue(from: content)
+        calf2BreedCode = try Field(location: 37, length: 2).extractValue(from: content)
         calf2Identity = try Field(location: 40, length: 12).extractValue(from: content)
         calf2IdentityType = try Field(location: 53, length: 1).extractValue(from: content)
         calf2IdentityAuthenticity = try Field(location: 55, length: 1).extractValue(from: content)
@@ -175,7 +175,7 @@ public struct ActualThirdCalfRecord: Record {
         return [.eventCalving3rdCalf]
     }
 
-    public var calfBreed: Int
+    public var calfBreedCode: Int
     public var calfIdentity: String
     public var calfIdentityType: IdentityType
     public var calfIdentityAuthenticity: ItemAuthenticity
@@ -185,7 +185,7 @@ public struct ActualThirdCalfRecord: Record {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
-        calfBreed = try Field(location: 3, length: 2).extractValue(from: content)
+        calfBreedCode = try Field(location: 3, length: 2).extractValue(from: content)
         calfIdentity = try Field(location: 6, length: 12).extractValue(from: content)
         calfIdentityType = try Field(location: 19, length: 1).extractValue(from: content)
         calfIdentityAuthenticity = try Field(location: 21, length: 1).extractValue(from: content)

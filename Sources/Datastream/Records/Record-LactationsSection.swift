@@ -69,11 +69,11 @@ public struct CalvingDetailsRecord: Record {
     public var ageAtCalving: Int
     public var calvingDate: Date
     public var calvingDateAuthenticity: ItemAuthenticity
-    public var sireBreed: Int
+    public var sireBreedCode: Int
     public var sireIdentity: String
     public var sireIdentityType: IdentityType
     public var sireIdentityAuthenticity: ItemAuthenticity
-    public var calfBreed: Int
+    public var calfBreedCode: Int
     public var calfIdentity: String
     public var calfIdentityType: IdentityType
     public var calfIdentityAuthenticity: ItemAuthenticity
@@ -87,11 +87,11 @@ public struct CalvingDetailsRecord: Record {
         ageAtCalving = try Field(location: 7, length: 3).extractValue(from: content)
         calvingDate = try Field(location: 11, length: 6).extractValue(from: content)
         calvingDateAuthenticity = try Field(location: 18, length: 1).extractValue(from: content)
-        sireBreed = try Field(location: 20, length: 2).extractValue(from: content)
+        sireBreedCode = try Field(location: 20, length: 2).extractValue(from: content)
         sireIdentity = try Field(location: 23, length: 12).extractValue(from: content)
         sireIdentityType = try Field(location: 36, length: 1).extractValue(from: content)
         sireIdentityAuthenticity = try Field(location: 38, length: 1).extractValue(from: content)
-        calfBreed = try Field(location: 42, length: 2).extractValue(from: content)
+        calfBreedCode = try Field(location: 42, length: 2).extractValue(from: content)
         calfIdentity = try Field(location: 45, length: 12).extractValue(from: content)
         calfIdentityType = try Field(location: 58, length: 1).extractValue(from: content)
         calfIdentityAuthenticity = try Field(location: 60, length: 1).extractValue(from: content)
@@ -105,12 +105,12 @@ public struct CalvingExtraCalvesRecord: Record {
         return [.calvingPossibleExtraCalves]
     }
     
-    public var calf2Breed: Int
+    public var calf2BreedCode: Int
     public var calf2Identity: String
     public var calf2IdentityType: IdentityType
     public var calf2IdentityAuthenticity: ItemAuthenticity
     public var calf2Sex: Sex?
-    public var calf3Breed: Int
+    public var calf3BreedCode: Int
     public var calf3Identity: String
     public var calf3IdentityType: IdentityType
     public var calf3IdentityAuthenticity: ItemAuthenticity
@@ -120,12 +120,12 @@ public struct CalvingExtraCalvesRecord: Record {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
-        calf2Breed = try Field(location: 3, length: 2).extractValue(from: content)
+        calf2BreedCode = try Field(location: 3, length: 2).extractValue(from: content)
         calf2Identity = try Field(location: 6, length: 12).extractValue(from: content)
         calf2IdentityType = try Field(location: 19, length: 1).extractValue(from: content)
         calf2IdentityAuthenticity = try Field(location: 21, length: 1).extractValue(from: content)
         calf2Sex = try Field(location: 23, length: 1).extractValue(from: content)
-        calf3Breed = try Field(location: 25, length: 2).extractValue(from: content)
+        calf3BreedCode = try Field(location: 25, length: 2).extractValue(from: content)
         calf3Identity = try Field(location: 28, length: 12).extractValue(from: content)
         calf3IdentityType = try Field(location: 41, length: 1).extractValue(from: content)
         calf3IdentityAuthenticity = try Field(location: 43, length: 1).extractValue(from: content)

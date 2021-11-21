@@ -217,7 +217,7 @@ extension HerdDetails: RecordBatchInitializable {
                            cellCountMembership: h8.cellCountMembership)
         
         self.init(nationalHerdMark: h1.nationalHerdMark,
-                  predominantBreed: context.breeds.withCode(h1.predominantBreed),
+                  predominantBreed: context.breeds.withCode(h1.predominantBreedCode),
                         herdPrefix: h1.herdPrefix,
                          enrolDate: h1.enrolDate,
                            address: address,
@@ -268,24 +268,24 @@ extension Animal: RecordBatchInitializable {
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
         let dam = AnimalParent(identity: c4.damIdentity,
                            identityType: c4.damIdentityType,
-                                  breed: context.breeds.withCode(c4.damBreed),
+                                  breed: context.breeds.withCode(c4.damBreedCode),
                          pedigreeStatus: c4.damPedigreeStatus,
                    identityAuthenticity: c4.damIdentityAuthenticity)
         let sire = AnimalParent(identity: c4.sireIdentity,
                             identityType: c4.sireIdentityType,
-                                   breed: context.breeds.withCode(c4.sireBreed),
+                                   breed: context.breeds.withCode(c4.sireBreedCode),
                           pedigreeStatus: nil,
                     identityAuthenticity: nil)
         self.init(nmrHerdNumber: c1.nmrHerdNumber,
                       aliveFlag: c1.liveFlag,
                      lineNumber: c1.lineNumber,
-                          breed: context.breeds.withCode(c1.breedID),
+                          breed: context.breeds.withCode(c1.breedCode),
                        identity: c1.identityNumber,
                    identityType: c1.identityType,
                  pedigreeStatus: c1.pedigreeStatus,
                 hbnAuthenticity: c1.hbnAuthenticity,
            identityAuthenticity: c1.earmarkAuthenticity,
-               alternativeBreed: context.breeds.withCode(c2.alternativeBreed),
+               alternativeBreed: context.breeds.withCode(c2.alternativeBreedCode),
                   alternativeID: c2.alternativeIdentity,
                       birthDate: c2.birthDate,
                    isYoungstock: c2.isYoungstock,
@@ -322,7 +322,7 @@ extension AnimalStatement: RecordBatchInitializable {
         let services = records.compactMap({ $0 as? ServiceRecord }).map { s4 in
             ServiceEvent(eventDate: s4.eventDate,
                   evenAuthenticity: s4.eventAuthenticity,
-                         sireBreed: context.breeds.withCode(s4.sireBreed),
+                         sireBreed: context.breeds.withCode(s4.sireBreedCode),
                       sireIdentity: s4.sireIdentity,
           sireIdentityAuthenticity: s4.sireIdentityAuthenticity,
                    pregnancyStatus: s4.pregnancyStatus)
@@ -334,7 +334,7 @@ extension AnimalStatement: RecordBatchInitializable {
                 let calf1 = CalvingEvent(eventDate: s5.eventDate,
                                  eventAuthenticity: s5.eventAuthenticity,
                                          isAssumed: false,
-                                         calfBreed: context.breeds.withCode(s5.calf1Breed),
+                                         calfBreed: context.breeds.withCode(s5.calf1BreedCode),
                                       calfIdentity: s5.calf1Identity,
                                   calfIdentityType: s5.calf1IdentityType,
                           calfIdentityAuthenticity: s5.calf1IdentityAuthenticity,
@@ -345,7 +345,7 @@ extension AnimalStatement: RecordBatchInitializable {
                 let calf2 = CalvingEvent(eventDate: s5.eventDate,
                                  eventAuthenticity: s5.eventAuthenticity,
                                          isAssumed: false,
-                                         calfBreed: context.breeds.withCode(s5.calf2Breed),
+                                         calfBreed: context.breeds.withCode(s5.calf2BreedCode),
                                       calfIdentity: s5.calf2Identity,
                                   calfIdentityType: s5.calf2IdentityType,
                           calfIdentityAuthenticity: s5.calf2IdentityAuthenticity,
@@ -358,7 +358,7 @@ extension AnimalStatement: RecordBatchInitializable {
                     let calf3 = CalvingEvent(eventDate: s5.eventDate,
                                      eventAuthenticity: s5.eventAuthenticity,
                                              isAssumed: false,
-                                             calfBreed: context.breeds.withCode(s6.calfBreed),
+                                             calfBreed: context.breeds.withCode(s6.calfBreedCode),
                                           calfIdentity: s6.calfIdentity,
                                       calfIdentityType: s6.calfIdentityType,
                               calfIdentityAuthenticity: s6.calfIdentityAuthenticity,
@@ -426,7 +426,7 @@ extension Lactation: RecordBatchInitializable {
                   throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Each lactation must have at least L1, L2 and L4 records.")
               }
         
-        let sire = SireDetails(sireBreed: context.breeds.withCode(l2.sireBreed),
+        let sire = SireDetails(sireBreed: context.breeds.withCode(l2.sireBreedCode),
                             sireIdentity: l2.sireIdentity,
                         sireIdentityType: l2.sireIdentityType,
                 sireIdentityAuthenticity: l2.sireIdentityAuthenticity)
@@ -437,7 +437,7 @@ extension Lactation: RecordBatchInitializable {
             let calf1 = CalvingEvent(eventDate: l2.calvingDate,
                              eventAuthenticity: l2.calvingDateAuthenticity,
                                      isAssumed: false,
-                                     calfBreed: context.breeds.withCode(l2.calfBreed),
+                                     calfBreed: context.breeds.withCode(l2.calfBreedCode),
                                   calfIdentity: l2.calfIdentity,
                               calfIdentityType: l2.calfIdentityType,
                       calfIdentityAuthenticity: l2.calfIdentityAuthenticity,
@@ -449,7 +449,7 @@ extension Lactation: RecordBatchInitializable {
             let calf2 = CalvingEvent(eventDate: l2.calvingDate,
                              eventAuthenticity: l2.calvingDateAuthenticity,
                                      isAssumed: false,
-                                     calfBreed: context.breeds.withCode(l3.calf2Breed),
+                                     calfBreed: context.breeds.withCode(l3.calf2BreedCode),
                                   calfIdentity: l3.calf2Identity,
                               calfIdentityType: l3.calf2IdentityType,
                       calfIdentityAuthenticity: l3.calf2IdentityAuthenticity,
@@ -460,7 +460,7 @@ extension Lactation: RecordBatchInitializable {
                 let calf3 = CalvingEvent(eventDate: l2.calvingDate,
                                  eventAuthenticity: l2.calvingDateAuthenticity,
                                          isAssumed: false,
-                                         calfBreed: context.breeds.withCode(l3.calf3Breed),
+                                         calfBreed: context.breeds.withCode(l3.calf3BreedCode),
                                       calfIdentity: l3.calf3Identity,
                                   calfIdentityType: l3.calf3IdentityType,
                           calfIdentityAuthenticity: l3.calf3IdentityAuthenticity,
@@ -526,7 +526,7 @@ extension BullDetails: RecordBatchInitializable {
             throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Bulls must have a B1 record.")
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
-        self.init(breed: context.breeds.withCode(b1.breed), identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
+        self.init(breed: context.breeds.withCode(b1.breedCode), identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
     }
 }
 
@@ -536,7 +536,7 @@ extension DeadDam: RecordBatchInitializable {
             throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Dead dams must have a D1 record.")
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
-        self.init(identity: d1.identity, identityType: d1.identityType, identityAuthenticity: d1.identityAuthenticity, breed: context.breeds.withCode(d1.breed), pedigreeStatus: d1.pedigreeStatus, name: d1.longName, evaluations: evaluations)
+        self.init(identity: d1.identity, identityType: d1.identityType, identityAuthenticity: d1.identityAuthenticity, breed: context.breeds.withCode(d1.breedCode), pedigreeStatus: d1.pedigreeStatus, name: d1.longName, evaluations: evaluations)
     }
 }
 

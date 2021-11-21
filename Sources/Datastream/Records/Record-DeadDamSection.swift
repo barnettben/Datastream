@@ -13,7 +13,7 @@ public struct DeadDamRecord: Record {
         return [.deadDamDetails]
     }
     
-    public var breed: Int
+    public var breedCode: Int
     public var identity: String
     public var identityType: IdentityType
     public var identityAuthenticity: ItemAuthenticity
@@ -24,7 +24,7 @@ public struct DeadDamRecord: Record {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
-        breed = try Field(location: 3, length: 2).extractValue(from: content)
+        breedCode = try Field(location: 3, length: 2).extractValue(from: content)
         identity = try Field(location: 6, length: 12).extractValue(from: content)
         identityType = try Field(location: 19, length: 1).extractValue(from: content)
         identityAuthenticity = try Field(location: 23, length: 1).extractValue(from: content)

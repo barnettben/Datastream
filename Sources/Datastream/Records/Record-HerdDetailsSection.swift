@@ -19,7 +19,7 @@ public struct NMRDetails: Record {
     public var weighingSequence: Int
     public var lastWeighNumber: Int
     public var nationalHerdMark: String
-    public var predominantBreed: Int
+    public var predominantBreedCode: Int
     public var herdPrefix: String
     public var enrolDate: Date
 
@@ -27,15 +27,15 @@ public struct NMRDetails: Record {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
 
-        self.nmrCounty = try Field(location: 3, length: 2).extractValue(from: content)
-        self.nmrOffice = try Field(location: 6, length: 2).extractValue(from: content)
-        self.recordingScheme = try Field(location: 9, length: 2).extractValue(from: content)
-        self.weighingSequence = try Field(location: 12, length: 2).extractValue(from: content)
-        self.lastWeighNumber = try Field(location: 15, length: 2).extractValue(from: content)
-        self.nationalHerdMark = try Field(location: 33, length: 5).extractValue(from: content)
-        self.predominantBreed = try Field(location: 39, length: 2).extractValue(from: content)
-        self.herdPrefix = try Field(location: 42, length: 20).extractValue(from: content)
-        self.enrolDate = try Field(location: 63, length: 6).extractValue(from: content)
+        nmrCounty = try Field(location: 3, length: 2).extractValue(from: content)
+        nmrOffice = try Field(location: 6, length: 2).extractValue(from: content)
+        recordingScheme = try Field(location: 9, length: 2).extractValue(from: content)
+        weighingSequence = try Field(location: 12, length: 2).extractValue(from: content)
+        lastWeighNumber = try Field(location: 15, length: 2).extractValue(from: content)
+        nationalHerdMark = try Field(location: 33, length: 5).extractValue(from: content)
+        predominantBreedCode = try Field(location: 39, length: 2).extractValue(from: content)
+        herdPrefix = try Field(location: 42, length: 20).extractValue(from: content)
+        enrolDate = try Field(location: 63, length: 6).extractValue(from: content)
     }
 }
 
