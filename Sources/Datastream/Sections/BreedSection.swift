@@ -8,14 +8,14 @@
 import Foundation
 
 /// A breed as used by the NMR recording system
-public struct Breed {
+public final class Breed {
     
     /// Numeric breed code
     public var code: Int
     
     /// A breed that is similar to this one for the purpose of
     /// lactation curve calculations
-    public var equivalent: Int
+    public weak var equivalent: Breed?
     
     /// Full name of this breed
     public var name: String
@@ -24,7 +24,17 @@ public struct Breed {
     public var abbreviation: String
     
     /// Gestation period in days
+    ///
+    /// For first calvers, reduce this value by two days
     public var gestationPeriod: Int
+    
+    /// The type of animal
+    public var type: BreedType
+    
+    /// Whether this uses a non-UK herd book
+    ///
+    /// Not for use for calves born in mainland UK
+    public var isImported: Bool
     
     /// Minimum recordable milk yield
     ///
@@ -89,4 +99,77 @@ public struct Breed {
     
     /// The maximum acceptable value for a natural lactation milk yield
     public var maxNaturalYield: Int
+    
+    public init(code: Int,
+                equivalent: Int,
+                name: String,
+                abbreviation: String,
+                gestationPeriod: Int,
+                type: BreedType,
+                isImported: Bool,
+                minDailyYield: Double,
+                maxDailyYield: Double,
+                lowMilkQuery: Double,
+                highMilkQuery: Double,
+                minFatPct: Double,
+                maxFatPct: Double,
+                lowFatQuery: Double,
+                highFatQuery: Double,
+                minProteinPct: Double,
+                maxProteinPct: Double,
+                lowProteinQuery: Double,
+                highProteinQuery: Double,
+                minLactosePct: Double,
+                maxLactosePct: Double,
+                lowLactoseQuery: Double,
+                highLactoseQuery: Double,
+                high305dYieldQuery: Int,
+                highNaturalYieldQuery: Int,
+                max305dYield: Int,
+                maxNaturalYield: Int) {
+        self.code = code
+        self.equivalent = equivalent
+        self.name = name
+        self.abbreviation = abbreviation
+        self.gestationPeriod = gestationPeriod
+        self.type = type
+        self.isImported = isImported
+        self.minDailyYield = minDailyYield
+        self.maxDailyYield = maxDailyYield
+        self.lowMilkQuery = lowMilkQuery
+        self.highMilkQuery = highMilkQuery
+        self.minFatPct = minFatPct
+        self.maxFatPct = maxFatPct
+        self.lowFatQuery = lowFatQuery
+        self.highFatQuery = highFatQuery
+        self.minProteinPct = minProteinPct
+        self.maxProteinPct = maxProteinPct
+        self.lowProteinQuery = lowProteinQuery
+        self.highProteinQuery = highProteinQuery
+        self.minLactosePct = minLactosePct
+        self.maxLactosePct = maxLactosePct
+        self.lowLactoseQuery = lowLactoseQuery
+        self.highLactoseQuery = highLactoseQuery
+        self.high305dYieldQuery = high305dYieldQuery
+        self.highNaturalYieldQuery = highNaturalYieldQuery
+        self.max305dYield = max305dYield
+        self.maxNaturalYield = maxNaturalYield
+    }
+}
+
+
+/// The typical purpose of a breed
+public enum BreedType {
+    
+    /// A milking breed
+    case dairy
+    
+    /// An breed grown for meat
+    case beef
+    
+    /// An breed used for both milk and meat
+    case dualPurpose
+    
+    /// Unspecified
+    case unspecified
 }
