@@ -19,7 +19,10 @@ public struct AnimalIdentityRecord: Record {
     public var nmrHerdNumber: String {
         return "\(regionNumber)\(producerNumber)\(herdCode)"
     }
-    public var liveFlag: Int
+    
+    // liveFlag is documented as being a value between 0-9, but real-world
+    // files have been found to have letter values as well
+    public var liveFlag: Character
     public var lineNumber: String
     public var breedCode: Int
     public var identityNumber: String

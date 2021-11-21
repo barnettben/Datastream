@@ -277,7 +277,7 @@ extension Animal: RecordBatchInitializable {
                           pedigreeStatus: nil,
                     identityAuthenticity: nil)
         self.init(nmrHerdNumber: c1.nmrHerdNumber,
-                      aliveFlag: c1.liveFlag,
+                       isInHerd: (c1.liveFlag == "0") ? true : false,
                      lineNumber: c1.lineNumber,
                           breed: context.breeds.withCode(c1.breedCode),
                        identity: c1.identityNumber,
@@ -399,7 +399,7 @@ extension AnimalStatement: RecordBatchInitializable {
                        sireIdentityAuthenticity: s1.sireIdentityAuthenticity)
         
         self.init(lineNumber: s1.lineNumber,
-                   aliveFlag: s1.liveFlag,
+                    isInHerd: (s1.liveFlag == "0") ? true : false,
                 isYoungstock: s1.isYoungstock,
                        breed: context.breeds.withCode(s1.breedCode),
              lactationNumber: s1.lactationNumber,
@@ -473,7 +473,7 @@ extension Lactation: RecordBatchInitializable {
         let productionNatural = records.first(typed: LactationTotalsRecord.self, identifiedBy: .lactationNaturalTotals).map({LactationProduction(record: $0)})
         
         self.init(lineNumber: l1.lineNumber,
-                   aliveFlag: l1.aliveFlag,
+                    isInHerd: (l1.liveFlag == "0") ? true : false,
              lactationNumber: l1.lactationNumber,
     estimatedLactationNumber: l1.estimatedLactationNumber,
                        breed: context.breeds.withCode(l1.breedCode),

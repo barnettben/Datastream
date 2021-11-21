@@ -17,9 +17,7 @@ public struct AnimalStatement {
     public var lineNumber: String
     
     /// Whether the animal is present or dead/sold
-    ///
-    /// 0 = Present, 1-9 = Dead/sold
-    public var aliveFlag: Int
+    public var isInHerd: Bool
     
     /// Whether this animal is a cow or youngstock
     public var isYoungstock: Bool
