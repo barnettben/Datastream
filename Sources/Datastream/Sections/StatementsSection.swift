@@ -17,9 +17,7 @@ public struct AnimalStatement {
     public var lineNumber: String
     
     /// Whether the animal is present or dead/sold
-    ///
-    /// 0 = Present, 1-9 = Dead/sold
-    public var aliveFlag: Int
+    public var isInHerd: Bool
     
     /// Whether this animal is a cow or youngstock
     public var isYoungstock: Bool
@@ -309,6 +307,9 @@ public enum AbsenceReason: Int {
     
     /// Some other abnormality of the milk prevented testing
     case abnormal = 4
+    
+    /// A reason not documented in the specification
+    case unknown = 5
 }
 
 /// The state of a potential pregnancy

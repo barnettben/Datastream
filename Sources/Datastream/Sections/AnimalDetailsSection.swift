@@ -14,9 +14,7 @@ public struct Animal {
     public var nmrHerdNumber: String
     
     /// Whether the animal is present or dead/sold
-    ///
-    /// 0 = Present, 1-9 = Dead/sold
-    public var aliveFlag: Int
+    public var isInHerd: Bool
     
     /// Line number in the herd
     ///

@@ -36,7 +36,7 @@ public struct CowIDRecord: Record {
         return [.cowIDRecord]
     }
 
-    public var liveFlag: Int
+    public var liveFlag: Character
     public var lineNumber: String
     public var isYoungstock: Bool
     public var breedCode: Int

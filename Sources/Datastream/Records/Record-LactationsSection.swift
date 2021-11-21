@@ -15,7 +15,7 @@ public struct CompletedLactationRecord: Record {
         return [.lactationFixedDetails]
     }
     
-    public var aliveFlag: Int
+    public var liveFlag: Character
     public var lineNumber: String
     public var lactationNumber: Int
     public var estimatedLactationNumber: Int
@@ -38,7 +38,7 @@ public struct CompletedLactationRecord: Record {
         recordIdentifier = try Field.identifierField.extractValue(from: content)
         Self.assertCanRepresentRecordIdentifier(recordIdentifier)
         
-        aliveFlag = try Field(location: 3, length: 1).extractValue(from: content)
+        liveFlag = try Field(location: 3, length: 1).extractValue(from: content)
         lineNumber = try Field(location: 5, length: 4).extractValue(from: content)
         lactationNumber = try Field(location: 10, length: 2).extractValue(from: content)
         breedCode = try Field(location: 13, length: 2).extractValue(from: content)
