@@ -26,13 +26,13 @@ public struct Animal {
     public var lineNumber: String
     
     /// The breed of the animal
-    public var breedID: Int
+    public var breedCode: Int
     
     /// Earmark or herdbook number
     public var identity: String
     
     /// The type of ID used in ``identity``
-    public var idType: IdentityType
+    public var identityType: IdentityType
     
     /// The pedigree status of the animal
     public var pedigreeStatus: PedigreeStatus

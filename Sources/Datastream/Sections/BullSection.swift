@@ -11,7 +11,7 @@ import Foundation
 public struct BullDetails {
     
     /// The sire's breed code
-    public var breed: Int
+    public var breedCode: Int
     
     /// The sire's identity number
     public var identity: String

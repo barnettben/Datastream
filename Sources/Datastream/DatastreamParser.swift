@@ -256,9 +256,9 @@ extension Animal: RecordBatchInitializable {
         self.init(nmrHerdNumber: c1.nmrHerdNumber,
                       aliveFlag: c1.liveFlag,
                      lineNumber: c1.lineNumber,
-                        breedID: c1.breedID,
+                      breedCode: c1.breedID,
                        identity: c1.identityNumber,
-                         idType: c1.identityType,
+                   identityType: c1.identityType,
                  pedigreeStatus: c1.pedigreeStatus,
                 hbnAuthenticity: c1.hbnAuthenticity,
            identityAuthenticity: c1.earmarkAuthenticity,
@@ -311,7 +311,7 @@ extension AnimalStatement: RecordBatchInitializable {
                 let calf1 = CalvingEvent(eventDate: s5.eventDate,
                                  eventAuthenticity: s5.eventAuthenticity,
                                          isAssumed: false,
-                                         calfBreed: s5.calf1Breed,
+                                     calfBreedCode: s5.calf1Breed,
                                       calfIdentity: s5.calf1Identity,
                                   calfIdentityType: s5.calf1IdentityType,
                           calfIdentityAuthenticity: s5.calf1IdentityAuthenticity,
@@ -322,7 +322,7 @@ extension AnimalStatement: RecordBatchInitializable {
                 let calf2 = CalvingEvent(eventDate: s5.eventDate,
                                  eventAuthenticity: s5.eventAuthenticity,
                                          isAssumed: false,
-                                         calfBreed: s5.calf2Breed,
+                                     calfBreedCode: s5.calf2Breed,
                                       calfIdentity: s5.calf2Identity,
                                   calfIdentityType: s5.calf2IdentityType,
                           calfIdentityAuthenticity: s5.calf2IdentityAuthenticity,
@@ -335,7 +335,7 @@ extension AnimalStatement: RecordBatchInitializable {
                     let calf3 = CalvingEvent(eventDate: s5.eventDate,
                                      eventAuthenticity: s5.eventAuthenticity,
                                              isAssumed: false,
-                                             calfBreed: s6.calfBreed,
+                                         calfBreedCode: s6.calfBreed,
                                           calfIdentity: s6.calfIdentity,
                                       calfIdentityType: s6.calfIdentityType,
                               calfIdentityAuthenticity: s6.calfIdentityAuthenticity,
@@ -348,7 +348,7 @@ extension AnimalStatement: RecordBatchInitializable {
             let assumedCalf = CalvingEvent(eventDate: s7.eventDate,
                                    eventAuthenticity: .nonAuthentic,
                                            isAssumed: true,
-                                           calfBreed: 0,
+                                       calfBreedCode: 0,
                                         calfIdentity: "",
                                     calfIdentityType: .noID,
                             calfIdentityAuthenticity: .nonAuthentic,
@@ -414,7 +414,7 @@ extension Lactation: RecordBatchInitializable {
             let calf1 = CalvingEvent(eventDate: l2.calvingDate,
                              eventAuthenticity: l2.calvingDateAuthenticity,
                                      isAssumed: false,
-                                     calfBreed: l2.calfBreed,
+                                 calfBreedCode: l2.calfBreed,
                                   calfIdentity: l2.calfIdentity,
                               calfIdentityType: l2.calfIdentityType,
                       calfIdentityAuthenticity: l2.calfIdentityAuthenticity,
@@ -426,7 +426,7 @@ extension Lactation: RecordBatchInitializable {
             let calf2 = CalvingEvent(eventDate: l2.calvingDate,
                              eventAuthenticity: l2.calvingDateAuthenticity,
                                      isAssumed: false,
-                                     calfBreed: l3.calf2Breed,
+                                 calfBreedCode: l3.calf2Breed,
                                   calfIdentity: l3.calf2Identity,
                               calfIdentityType: l3.calf2IdentityType,
                       calfIdentityAuthenticity: l3.calf2IdentityAuthenticity,
@@ -437,7 +437,7 @@ extension Lactation: RecordBatchInitializable {
                 let calf3 = CalvingEvent(eventDate: l2.calvingDate,
                                  eventAuthenticity: l2.calvingDateAuthenticity,
                                          isAssumed: false,
-                                         calfBreed: l3.calf3Breed,
+                                     calfBreedCode: l3.calf3Breed,
                                       calfIdentity: l3.calf3Identity,
                                   calfIdentityType: l3.calf3IdentityType,
                           calfIdentityAuthenticity: l3.calf3IdentityAuthenticity,
@@ -503,7 +503,7 @@ extension BullDetails: RecordBatchInitializable {
             throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Bulls must have a B1 record.")
         }
         let evaluations = records.compactMap({ $0 as? PTARecord }).compactMap({ GeneticEvaluation(record: $0) })
-        self.init(breed: b1.breed, identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
+        self.init(breedCode: b1.breed, identity: b1.identity, longName: b1.longName, shortName: b1.shortName, evaluations: evaluations)
     }
 }
 

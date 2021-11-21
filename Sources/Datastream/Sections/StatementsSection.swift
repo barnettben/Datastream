@@ -160,7 +160,7 @@ public struct CalvingEvent {
     public var isAssumed: Bool
     
     /// The breed of the calf born
-    public var calfBreed: Int
+    public var calfBreedCode: Int
     
     /// The identity of the calf born
     public var calfIdentity: String
