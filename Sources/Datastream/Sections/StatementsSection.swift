@@ -307,6 +307,9 @@ public enum AbsenceReason: Int {
     
     /// Some other abnormality of the milk prevented testing
     case abnormal = 4
+    
+    /// A reason not documented in the specification
+    case unknown = 5
 }
 
 /// The state of a potential pregnancy
