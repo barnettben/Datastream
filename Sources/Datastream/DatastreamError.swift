@@ -51,6 +51,11 @@ public enum ErrorCode {
     /// Thrown when a record has an identifier not in the specification
     case unknownIdentifier
     
-    /// A catch-all error for problems that don't merit a more specific description
+    /// A catch-all error for problems with the format of the data file
+    ///
+    /// A message should provide further details about the problem
     case malformedInput
+    
+    /// An unknown error. A message should be provided to provide further details.
+    case unknown
 }

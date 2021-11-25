@@ -50,4 +50,12 @@ extension Datastream {
     public init(url: URL) async throws {
         self = try await DatastreamParser(url: url).parse()
     }
+    
+    /// Creates a new `Datastream` from a file at a given URL
+    ///
+    /// - Parameter url: The location of a Datastream file
+    /// - Throws: `DatastreamError`
+    public init(url: URL) throws {
+        self = try DatastreamParser(url: url).parse()
+    }
 }

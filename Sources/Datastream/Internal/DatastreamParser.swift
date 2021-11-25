@@ -69,6 +69,43 @@ internal class DatastreamParser {
     }
 }
 
+extension DatastreamParser {
+    
+    /// Wraps a parser
+    private class ParserSyncWrapper {
+        private var parser: DatastreamParser
+        private var result: Datastream?
+        
+        init(parser: DatastreamParser) {
+            self.parser = parser
+        }
+        
+        func parse() throws -> Datastream {
+            
+            let semaphore = DispatchSemaphore(value: 0)
+            Task {
+                let ds = try await parser.parse()
+                DispatchQueue.main.sync {
+                    self.result = ds
+                }
+                semaphore.signal()
+            }
+            semaphore.wait()
+            
+            guard let result = result else {
+                throw DatastreamError(code: .unknown, message: "The file parser did not provide any content.", context: nil)
+            }
+            return result
+        }
+    }
+    
+    func parse() throws -> Datastream {
+        let wrapper = ParserSyncWrapper(parser: self)
+        let ds = try wrapper.parse()
+        return ds
+    }
+}
+
 
 extension DatastreamParser {
     private func parseHerdDetailsSection() async throws -> HerdDetails {
