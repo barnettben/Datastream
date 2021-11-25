@@ -21,6 +21,13 @@ public struct DatastreamError: Error {
     /// This may differ depending on the particular error type.
     /// For example, it could be the content of a record or a particular field
     public var context: String?
+    
+    /// Creates a new DatastreamError
+    public init(code: ErrorCode, message: String? = nil, context: String? = nil) {
+        self.code = code
+        self.message = message
+        self.context = context
+    }
 }
 
 extension DatastreamError: LocalizedError {
