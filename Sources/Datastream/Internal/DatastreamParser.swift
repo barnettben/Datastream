@@ -547,7 +547,7 @@ extension Breed: RecordBatchInitializable {
               let w6 = records.first(typed: BreedPart3Record.self) else {
             throw DatastreamError(code: .malformedInput, message: "Missing required datastream records. Breeds must have W4, W5 and W6 records.")
         }
-        print(w4.abbreviation)
+        
         self.init(code: w4.code,
             equivalent: context.breeds.withCode(w4.equivalent),
                   name: w4.name,
